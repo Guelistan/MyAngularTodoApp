@@ -1,0 +1,6 @@
+<div class="calendar">
+  <h3>{{ currentDate | date: 'MMMM yyyy' }}</h3>
+  <div class="days">
+    <div *ngFor="let day of daysInMonth" class="day">{{ day }}</div>
+  </div>
+</div>

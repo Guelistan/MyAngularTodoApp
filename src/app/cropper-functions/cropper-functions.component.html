@@ -1,0 +1,17 @@
+<div class="cropper-container">
+  <input type="file" (change)="fileChangeEvent($event)" accept="image/*" />
+
+  <div>
+    <img #imageElement alt="Bild zum Zuschneiden" style="max-width: 100%; margin-top: 1rem;" />
+  </div>
+
+  <div class="buttons">
+    <button (click)="cropImage()">✂️ Zuschneiden</button>
+    <button (click)="resetImage()">🔁 Zurücksetzen</button>
+  </div>
+
+  <div *ngIf="croppedImage">
+    <h3>📷 Vorschau:</h3>
+    <img [src]="croppedImage" alt="Zugeschnittenes Bild" style="max-width: 100%;" />
+  </div>
+</div>
