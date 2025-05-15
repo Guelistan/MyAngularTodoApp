@@ -7,5 +7,6 @@ export const routes: Routes = [
   { path: 'cropper', loadComponent: () => import('./cropper-functions/cropper-functions.component').then(m => m.CropperFunctionsComponent) },
   { path: 'camera', loadComponent: () => import('./camera-functions/camera-functions.component').then(m => m.CameraFunctionsComponent) },
   { path: 'utils', loadComponent: () => import('./utils.service').then(m => m.UtilsService) },
-  { path: 'calendar', loadComponent: () => import('./calendar/calendar.component').then(m => m.CalendarComponent) }
+  { path: 'calendar', loadComponent: () => import('./calendar/calendar.component').then(m => m.CalendarComponent) },
+
 ];
