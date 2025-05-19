@@ -5,5 +5,10 @@
     "target": "ES2016",
     "types": []
   },
-  "include": []
+  "include": [],
+  "script": {
+    "include": [
+      "src/**/*.d.ts"
+    ]
+  },
 }

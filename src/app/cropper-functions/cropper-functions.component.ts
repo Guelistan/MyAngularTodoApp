@@ -1,51 +1,50 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import Cropper from 'cropperjs';
-import type { CropperOptions } from 'cropperjs';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-cropper',
+  selector: 'app-cropper-functions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div>
       <img #image [src]="imageSrc" alt="Image to crop" />
-      <button (click)="cropImage()">Crop</button>
+      <button (click)="cropImage()">Crop (zentraler Ausschnitt)</button>
     </div>
   `,
-  styles: [
-    `
-      img {
-        max-width: 100%;
-        display: block;
-      }
-    `,
-  ],
+  styles: [`
+    img { max-width: 100%; display: block; }
+  `]
 })
-export class CropperComponent {
-  @ViewChild('image', { static: true }) imageElement!: ElementRef<HTMLImageElement>;
+export class CropperFunctionsComponent {
+  @Input() imageSrc!: string;
   @Output() cropped = new EventEmitter<string>();
-
-  imageSrc: string = 'path/to/your/image.jpg'; // Ersetze durch deinen Bildpfad
-  private cropper!: Cropper;
-  ngAfterViewInit() {
-    const options: CropperOptions = {
-      aspectRatio: 1,
-      viewMode: 1,
-    };
-    this.cropper = new Cropper(this.imageElement.nativeElement, options);
-  }
-  }
+  @ViewChild('image', { static: true }) imageElement!: ElementRef<HTMLImageElement>;
 
   cropImage() {
-    const canvas = this.cropper.getCropperCanvas();
-    if (canvas) {
+    const img = this.imageElement.nativeElement;
+    const canvas = document.createElement('canvas');
+    // Beispiel: quadratischer Ausschnitt aus der Mitte
+    const size = Math.min(img.naturalWidth, img.naturalHeight);
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(
+        img,
+        (img.naturalWidth - size) / 2,
+        (img.naturalHeight - size) / 2,
+        size,
+        size,
+        0,
+        0,
+        size,
+        size
+      );
       const croppedImage = canvas.toDataURL('image/png');
       this.cropped.emit(croppedImage);
     }
   }
-}
-function cropImage() {
-  throw new Error('Function not implemented.');
 }
 

@@ -1,18 +1,19 @@
-<div class="cropper-container">
-  <input type="file" (change)="fileChangeEvent($event)" accept="image/*" />
-
-  <div>
-    <img #imageElement alt="Bild zum Zuschneiden" style="max-width: 100%; margin-top: 1rem;" />
-  </div>
-
-  <div class="buttons">
-    <button (click)="cropImage()">✂️ Zuschneiden</button>
-    <button (click)="resetImage()">🔁 Zurücksetzen</button>
-  </div>
-
-  <div *ngIf="croppedImage">
-    <h3>📷 Vorschau:</h3>
-    <img [src]="croppedImage" alt="Zugeschnittenes Bild" style="max-width: 100%;" />
-  </div>
+<div>
+  <h2>Bild auswählen oder aufnehmen</h2>
+  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+  <button (click)="showCamera = !showCamera">
+    {{ showCamera ? 'Kamera schließen' : 'Kamera öffnen' }}
+  </button>
+  <app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
 </div>
-<div class="cropperCanvas"></div>
+
+<div *ngIf="imageToEdit">
+  <h3>Bild bearbeiten</h3>
+  <app-cropper [imageSrc]="imageToEdit" (cropped)="onCropped($event)"></app-cropper>
+</div>
+
+<div *ngIf="croppedImage">
+  <h3>Bearbeitetes Bild</h3>
+  <img [src]="croppedImage" style="max-width: 300px; display: block;"/>
+  <button (click)="saveImage()">Bild speichern</button>
+</div>

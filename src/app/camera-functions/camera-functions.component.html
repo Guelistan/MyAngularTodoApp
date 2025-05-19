@@ -1,14 +1,8 @@
 <div class="camera-container">
-  <button (click)="openCamera()">📷 Kamera öffnen</button>
-  <button (click)="takePicture()">🖼️ Bild aufnehmen</button>
-  <button (click)="stopCamera()">❌ Kamera stoppen</button>
-
-  <div class="preview">
-    <video #videoElement autoplay playsinline style="width: 100%; max-width: 480px;"></video>
-  </div>
-
-  <div *ngIf="capturedImage" class="captured">
-    <h3>Bildvorschau:</h3>
-    <img [src]="capturedImage" alt="Aufgenommenes Bild" style="max-width: 100%;" />
+  <video #videoElement width="320" height="240" autoplay></video>
+  <div class="camera-controls">
+    <button type="button" (click)="openCamera()">Kamera starten</button>
+    <button type="button" (click)="takePicture()">Foto aufnehmen</button>
+    <button type="button" (click)="stopCamera()">Kamera stoppen</button>
   </div>
 </div>
