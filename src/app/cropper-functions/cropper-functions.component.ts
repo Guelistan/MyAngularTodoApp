@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import Cropper from 'cropperjs';
+import type { CropperOptions } from 'cropperjs';
 
 @Component({
   selector: 'app-cropper',
@@ -27,19 +28,24 @@ export class CropperComponent {
 
   imageSrc: string = 'path/to/your/image.jpg'; // Ersetze durch deinen Bildpfad
   private cropper!: Cropper;
-
   ngAfterViewInit() {
-    this.cropper = new Cropper(this.imageElement.nativeElement, {
+    const options: CropperOptions = {
       aspectRatio: 1,
       viewMode: 1,
-    });
+    };
+    this.cropper = new Cropper(this.imageElement.nativeElement, options);
+  }
   }
 
   cropImage() {
-    const canvas = this.cropper.getCroppedCanvas();
+    const canvas = this.cropper.getCropperCanvas();
     if (canvas) {
       const croppedImage = canvas.toDataURL('image/png');
       this.cropped.emit(croppedImage);
     }
   }
 }
+function cropImage() {
+  throw new Error('Function not implemented.');
+}
+
