@@ -20,7 +20,10 @@
     </ul>
     <button (click)="saveTodos()">💾 Aufgaben speichern</button>
   </section>
-
+  <!-- <app-cropper (cropped)="onImageCropped($event)"></app-cropper> -->
+  <section class="image-preview">
+    <h2>🖼️ Bildvorschau</h2>
+    <img *ngIf="imageInput" [src]="imageInput" alt="Zugeschnittenes Bild" width="100" />
   <!-- Verlauf -->
   <section class="history">
     <h2>✅ Erledigte Aufgaben (Verlauf)</h2>
