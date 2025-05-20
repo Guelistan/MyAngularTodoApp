@@ -6,14 +6,18 @@
   </div>
 
   <div class="weekdays">
-    <div *ngFor="let day of ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']">{{ day }}</div>
+    <div *ngFor="let day of ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']" class="weekday">
+      {{ day }}
+    </div>
   </div>
 
   <div class="days-grid">
-    <div *ngFor="let day of daysInMonth"
-         [class.today]="isToday(day)"
-         class="day-cell">
-      {{ day?.getDate() || '' }}
+    <div *ngFor="let day of daysInMonth" class="day-cell" [class.today]="isToday(day)"
+      [class.has-task]="hasTodoForDay(day)">
+      <span>{{ day?.getDate() || '' }}</span>
+      <ng-container *ngIf="day">
+        <img *ngFor="let todo of todosForDay(day)" [src]=[todo] class="calendar-day-task-img" alt="Task-Bild" />
+      </ng-container>
     </div>
   </div>
 </div>

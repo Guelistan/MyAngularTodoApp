@@ -109,3 +109,15 @@ button:hover {
 .drop-zone:hover {
   background: #f0f8ff;
 }
+.drop-zone {
+  border: 2px dashed #0078d4;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  transition: background 0.3s ease;
+}
+
+.drop-zone:hover {
+  background: #f0f8ff;
+}

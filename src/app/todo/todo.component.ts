@@ -1,16 +1,23 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
 import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
 import { UtilsService } from '../utils.service';
 import { ImageEditor } from '../image-editor';
+
 interface Todo {
   text: string;
   image?: string;
   color?: string;
   date?: Date;
   dueDate?: Date;
+  todoDateInput?: string;
+  id: number;
+  titel: string;
+  description: string;
+  completed: boolean;
+  
 }
 
 @Component({
@@ -21,9 +28,9 @@ interface Todo {
   styleUrls: ['./todo.component.css']
 })
 export class TodoComponent {
+  @Input() todos: any[] = [];
   todoInput = '';
   todoDateInput = '';
-  todos: Todo[] = [];
   editIndex = -1;
 
   imageInput: any;
@@ -45,34 +52,6 @@ export class TodoComponent {
     this.history = this.utilsService.loadHistory();
   }
 
-  addTodo() {
-    if (this.todoInput.trim()) {
-      const color = this.utilsService.getRandomRainbowColor();
-      this.todos.push({ text: this.todoInput.trim(), color, date: this.currentDate });
-      this.todoInput = '';
-
-
-
-      this.todos.push({
-        text: this.todoInput,
-        image: this.imageInput,
-        dueDate: new Date(this.todoDateInput)
-      });
-      this.todoInput = '';
-      this.imageInput = '';
-      this.todoDateInput = '';
-    }
-  }
-
-  removeTodo(index: number) {
-    const removed = this.todos.splice(index, 1)[0];
-    if (removed) {
-      this.addToHistory(removed.text); // oder das ganze Objekt speichern
-    }
-    if (this.editIndex === index) {
-      this.editIndex = -1;
-    }
-  }
   onDragOver(event: DragEvent) {
     event.preventDefault();
   }
@@ -86,6 +65,32 @@ export class TodoComponent {
         this.imageInput = reader.result as string;
       };
       reader.readAsDataURL(file);
+    }
+  }
+
+  addTodo() {
+    if (this.todoInput.trim()) {
+      const color = this.utilsService.getRandomRainbowColor();
+      this.todos.push({
+        text: this.todoInput.trim(),
+        color,
+        date: this.currentDate,
+        image: this.imageInput,
+        dueDate: this.todoDateInput ? new Date(this.todoDateInput) : undefined
+      });
+      this.todoInput = '';
+      this.imageInput = '';
+      this.todoDateInput = '';
+    }
+  }
+
+  removeTodo(index: number) {
+    const removed = this.todos.splice(index, 1)[0];
+    if (removed) {
+      this.addToHistory(removed.text);
+    }
+    if (this.editIndex === index) {
+      this.editIndex = -1;
     }
   }
 
@@ -111,7 +116,7 @@ export class TodoComponent {
     this.croppedImage = image;
   }
 
-  ImageEditor:ImageEditor | null = null;
+  ImageEditor: ImageEditor | null = null;
   editImage(index: number) {
     this.editIndex = index;
     this.imageToEdit = this.todos[index].image || null;

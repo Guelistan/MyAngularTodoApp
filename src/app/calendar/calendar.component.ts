@@ -1,5 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+// Define the Todo interface if not imported from elsewhere
+export interface Todo {
+  title: string;
+  dueDate?: string | Date;
+  // Add other properties as needed
+}
 
 @Component({
   selector: 'app-calendar',
@@ -11,6 +17,18 @@ import { CommonModule } from '@angular/common';
 export class CalendarComponent {
   currentDate = new Date();
   daysInMonth: Date[] = [];
+  @Input() todos: Todo[] = [];
+  hasTodoForDay(day: Date): boolean {
+    return this.todos.some(todo =>
+      todo.dueDate && new Date(todo.dueDate).toDateString() === day.toDateString()
+    );
+  }
+
+  todosForDay(day: Date): Todo[] {
+    return this.todos.filter(todo =>
+      todo.dueDate && new Date(todo.dueDate).toDateString() === day.toDateString()
+    );
+  }
 
   constructor() {
     this.generateCalendar();
