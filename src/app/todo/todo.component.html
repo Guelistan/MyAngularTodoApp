@@ -3,7 +3,7 @@
 
   <!-- Neue Aufgabe hinzufügen -->
   <section class="add-todo">
-    <input type="text" [(ngModel)]="todoInput" placeholder="Was möchtest du erledigen?" />
+    <input [(ngModel)]="todoInput" placeholder="Neuer Task" (input)="onInput($event.target.value)" />
     <input type="text" [(ngModel)]="imageInput" placeholder="Bild-URL (optional)" />
     <button (click)="addTodo()">➕ Hinzufügen</button>
   </section>
@@ -24,45 +24,72 @@
   <section class="image-preview">
     <h2>🖼️ Bildvorschau</h2>
     <img *ngIf="imageInput" [src]="imageInput" alt="Zugeschnittenes Bild" width="100" />
-  <!-- Verlauf -->
-  <section class="history">
-    <h2>✅ Erledigte Aufgaben (Verlauf)</h2>
-    <ul>
-      <li *ngFor="let item of history">{{ item }}</li>
-    </ul>
-    <button (click)="clearHistory()">🧹 Verlauf löschen</button>
-  </section>
+    <!-- Verlauf -->
+    <section class="history">
+      <h2>✅ Erledigte Aufgaben (Verlauf)</h2>
+      <ul>
+        <li *ngFor="let item of history">{{ item }}</li>
+      </ul>
+      <button (click)="clearHistory()">🧹 Verlauf löschen</button>
+    </section>
 
-  <!-- Kalender -->
-  <section class="calendar">
-    <h2>
-      📅 {{ currentDate | date: 'MMMM yyyy' }}
-      <button (click)="previousMonth()">⏮️</button>
-      <button (click)="nextMonth()">⏭️</button>
-    </h2>
-    <div class="days">
-      <div
-        *ngFor="let day of daysInMonth"
-        class="day"
-        [class.today]="isToday(day)"
-      >
-        {{ day }}
+    <!-- Kalender -->
+    <section class="calendar">
+      <h2>
+        📅 {{ currentDate | date: 'MMMM yyyy' }}
+        <button (click)="previousMonth()">⏮️</button>
+        <button (click)="nextMonth()">⏭️</button>
+      </h2>
+      <div class="days">
+        <div *ngFor="let day of daysInMonth" class="day" [class.today]="isToday(day)">
+          {{ day }}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Bild zuschneiden -->
-  <section class="image-cropper">
-    <h2>🖼️ Bild zuschneiden</h2>
-    <app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
-  </section>
+    <!-- Bild zuschneiden -->
+    <section class="image-cropper">
+      <h2>🖼️ Bild zuschneiden</h2>
+      <app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
+    </section>
 </div>
 <section class="add-todo">
-  <input type="text" [(ngModel)]="todoInput" placeholder="Was möchtest du erledigen?" />
+  <input [(ngModel)]="todoInput" placeholder="Neuer Task" (input)="onInput($event.target.value)" />
 
   <!-- Bild-Cropper statt Bild-URL -->
   <app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
+  <div>
+    <h2>Bild auswählen oder aufnehmen</h2>
+    <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+    <button (click)="showCamera = !showCamera">
+      {{ showCamera ? 'Kamera schließen' : 'Kamera öffnen' }}
+    </button>
+    <app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
+  </div>
 
+  <div *ngIf="imageToEdit">
+    <h3>Bild bearbeiten</h3>
+    <app-cropper [imageSrc]="imageToEdit" (cropped)="onCropped($event)"></app-cropper>
+  </div>
+  <div *ngIf="croppedImage">
+    <h3>Bearbeitetes Bild</h3>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <img [src]="croppedImage" [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
+        [style.background]="backgroundColor"
+        style="max-width: 300px; width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 4px solid #333; display: block;" />
+      <div style="margin: 10px 0;">
+        <label>
+          Hintergrundfarbe:
+          <input type="color" [(ngModel)]="backgroundColor" />
+        </label>
+        <label style="margin-left: 20px;">
+          <input type="checkbox" [(ngModel)]="isBlackAndWhite" />
+          Schwarz/Weiß
+        </label>
+      </div>
+      <button (click)="saveImage()">Bild speichern</button>
+    </div>
+  </div>
   <button (click)="addTodo()">➕ Hinzufügen</button>
 </section>
 <div *ngIf="imageInput">
@@ -71,5 +98,4 @@
 </div>
 <app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
 
-<!-- <div class="todo-container">
- -->
+<div class="todo-container">

@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-cropper-functions',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule,FormsModule],
   template: `
     <div>
       <img #image [src]="imageSrc" alt="Image to crop" />
@@ -45,6 +45,10 @@ export class CropperFunctionsComponent {
       const croppedImage = canvas.toDataURL('image/png');
       this.cropped.emit(croppedImage);
     }
+  }
+
+  onInput(value: string) {
+    console.log('Input event:', value);
   }
 }
 
