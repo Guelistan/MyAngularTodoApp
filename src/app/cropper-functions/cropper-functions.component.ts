@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import Cropper from 'cropperjs';
 @Component({
   selector: 'app-cropper-functions',
   standalone: true,

@@ -1,3 +1,7 @@
+
+import { Component } from '@angular/core'; 
+import { ImageConfig } from '@angular/common';
+
 export class ImageEditor {
   imageToEdit: string | null = null;
   croppedImage: string | null = null;
@@ -6,8 +10,9 @@ export class ImageEditor {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.imageToEdit = e.target.result;
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        const target = event.target as FileReader;
+        this.imageToEdit = target.result as string;
       };
       reader.readAsDataURL(input.files[0]);
     }
@@ -24,7 +29,7 @@ export class ImageEditor {
 
   saveImage() {
     if (this.croppedImage) {
-      const images = JSON.parse(localStorage.getItem('myImages') || '[]');
+      const images: string[] = JSON.parse(localStorage.getItem('myImages') || '[]');
       images.push(this.croppedImage);
       localStorage.setItem('myImages', JSON.stringify(images));
       alert('Bild gespeichert!');

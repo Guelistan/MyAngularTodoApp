@@ -4,6 +4,7 @@
   <section class="add-todo">
     <input [(ngModel)]="todoInput" placeholder="Neuer Task" />
     <input type="text" [(ngModel)]="imageInput" placeholder="Bild-URL (optional)" />
+    <input type="file" accept="image/*" (change)="onFileSelected($event, todos.length)" />
     <button (click)="addTodo()">➕ Hinzufügen</button>
   </section>
 

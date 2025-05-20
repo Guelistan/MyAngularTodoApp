@@ -1,5 +1,45 @@
-/* You can add global styles to this file, and also import other style files */
-body.dark-mode {
-  background-color: #121212;
-  color: #f0f0f0;
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  min-height: 80vh;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Bereiche: Kamera (links), Todos (mitte), Kalender (rechts) */
+.camera {
+  flex: 1 1 20%;
+}
+
+.todos {
+  flex: 2 1 60%;
+}
+
+.calendar {
+  flex: 1 1 20%;
+}
+
+/* Responsive Anpassung für kleine Geräte */
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .camera,
+  .todos,
+  .calendar {
+    flex: unset;
+    width: 100%;
+  }
 }

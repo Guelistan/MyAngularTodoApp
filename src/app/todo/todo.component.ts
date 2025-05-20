@@ -3,10 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
 import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
-
+import { UtilsService } from '../utils.service';
+import { ImageEditor } from '../image-editor';
 interface Todo {
   text: string;
   image?: string;
+  color?: string;
+  date?: Date;
 }
 
 @Component({
@@ -35,15 +38,24 @@ export class TodoComponent {
 
   isDarkMode = signal(false);
 
+  constructor(private utilsService: UtilsService) {
+    this.todos = this.utilsService.loadTodosFromLocalStorage();
+    this.history = this.utilsService.loadHistory();
+  }
+
   addTodo() {
     if (this.todoInput.trim()) {
-      this.todos.push({ text: this.todoInput.trim() });
+      const color = this.utilsService.getRandomRainbowColor();
+      this.todos.push({ text: this.todoInput.trim(), color, date: this.currentDate });
       this.todoInput = '';
     }
   }
 
   removeTodo(index: number) {
-    this.todos.splice(index, 1);
+    const removed = this.todos.splice(index, 1)[0];
+    if (removed) {
+      this.addToHistory(removed.text); // oder das ganze Objekt speichern
+    }
     if (this.editIndex === index) {
       this.editIndex = -1;
     }
@@ -71,6 +83,7 @@ export class TodoComponent {
     this.croppedImage = image;
   }
 
+  ImageEditor:ImageEditor | null = null;
   editImage(index: number) {
     this.editIndex = index;
     this.imageToEdit = this.todos[index].image || null;
@@ -98,6 +111,18 @@ export class TodoComponent {
   previousMonth() { }
   nextMonth() { }
   isToday(_day: any) { return false; }
-  saveTodos() { }
-  clearHistory() { this.history = []; }
+
+  saveTodos() {
+    this.utilsService.saveTodosToLocalStorage(this.todos);
+  }
+
+  clearHistory() {
+    this.utilsService.clearHistory();
+    this.history = [];
+  }
+
+  addToHistory(task: string) {
+    this.history = this.utilsService.addToHistory(task, this.history);
+    this.utilsService.saveHistory(this.history);
+  }
 }
