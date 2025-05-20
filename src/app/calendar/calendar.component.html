@@ -1,6 +1,19 @@
-<div class="calendar">
-  <h3>{{ currentDate | date: 'MMMM yyyy' }}</h3>
-  <div class="days">
-    <div *ngFor="let day of daysInMonth" class="day">{{ day }}</div>
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button (click)="previousMonth()">⏮️</button>
+    <h2>{{ currentDate | date: 'MMMM yyyy' }}</h2>
+    <button (click)="nextMonth()">⏭️</button>
+  </div>
+
+  <div class="weekdays">
+    <div *ngFor="let day of ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']">{{ day }}</div>
+  </div>
+
+  <div class="days-grid">
+    <div *ngFor="let day of daysInMonth"
+         [class.today]="isToday(day)"
+         class="day-cell">
+      {{ day?.getDate() || '' }}
+    </div>
   </div>
 </div>

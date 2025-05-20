@@ -1,101 +1,79 @@
-<div class="todo-container">
+<div class="todo-container" [class.dark-mode]="isDarkMode()">
   <h1>📝 Meine Todo-App</h1>
 
-  <!-- Neue Aufgabe hinzufügen -->
   <section class="add-todo">
-    <input [(ngModel)]="todoInput" placeholder="Neuer Task" (input)="onInput($event.target.value)" />
+    <input [(ngModel)]="todoInput" placeholder="Neuer Task" />
     <input type="text" [(ngModel)]="imageInput" placeholder="Bild-URL (optional)" />
     <button (click)="addTodo()">➕ Hinzufügen</button>
   </section>
 
-  <!-- Aktuelle Aufgaben -->
   <section class="todo-list">
     <h2>📋 Aktuelle Aufgaben</h2>
     <ul>
       <li *ngFor="let todo of todos; let i = index">
-        <span [style.color]="getRandomColor()">{{ todo.text }}</span>
+        <span>{{ todo.text }}</span>
         <img *ngIf="todo.image" [src]="todo.image" alt="Bild" width="50" />
         <button (click)="removeTodo(i)">🗑️ Entfernen</button>
+        <button (click)="editImage(i)">✏️ Bearbeiten</button>
       </li>
     </ul>
     <button (click)="saveTodos()">💾 Aufgaben speichern</button>
   </section>
-  <!-- <app-cropper (cropped)="onImageCropped($event)"></app-cropper> -->
-  <section class="image-preview">
+
+  <section class="image-preview" *ngIf="imageInput">
     <h2>🖼️ Bildvorschau</h2>
-    <img *ngIf="imageInput" [src]="imageInput" alt="Zugeschnittenes Bild" width="100" />
-    <!-- Verlauf -->
-    <section class="history">
-      <h2>✅ Erledigte Aufgaben (Verlauf)</h2>
-      <ul>
-        <li *ngFor="let item of history">{{ item }}</li>
-      </ul>
-      <button (click)="clearHistory()">🧹 Verlauf löschen</button>
-    </section>
+    <img [src]="imageInput" alt="Bildvorschau" width="100" />
+  </section>
 
-    <!-- Kalender -->
-    <section class="calendar">
-      <h2>
-        📅 {{ currentDate | date: 'MMMM yyyy' }}
-        <button (click)="previousMonth()">⏮️</button>
-        <button (click)="nextMonth()">⏭️</button>
-      </h2>
-      <div class="days">
-        <div *ngFor="let day of daysInMonth" class="day" [class.today]="isToday(day)">
-          {{ day }}
-        </div>
+  <section class="history">
+    <h2>✅ Erledigte Aufgaben (Verlauf)</h2>
+    <ul>
+      <li *ngFor="let item of history">{{ item }}</li>
+    </ul>
+    <button (click)="clearHistory()">🧹 Verlauf löschen</button>
+  </section>
+
+  <section class="calendar">
+    <h2>
+      📅 {{ currentDate | date: 'MMMM yyyy' }}
+      <button (click)="previousMonth()">⏮️</button>
+      <button (click)="nextMonth()">⏭️</button>
+    </h2>
+    <div class="days">
+      <div *ngFor="let day of daysInMonth" class="day" [class.today]="isToday(day)">
+        {{ day }}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Bild zuschneiden -->
-    <section class="image-cropper">
-      <h2>🖼️ Bild zuschneiden</h2>
-      <app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
-    </section>
-</div>
-<section class="add-todo">
-  <input [(ngModel)]="todoInput" placeholder="Neuer Task" (input)="onInput($event.target.value)" />
-
-  <!-- Bild-Cropper statt Bild-URL -->
-  <app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
-  <div>
-    <h2>Bild auswählen oder aufnehmen</h2>
-    <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-    <button (click)="showCamera = !showCamera">
-      {{ showCamera ? 'Kamera schließen' : 'Kamera öffnen' }}
-    </button>
-    <app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
-  </div>
-
-  <div *ngIf="imageToEdit">
-    <h3>Bild bearbeiten</h3>
-    <app-cropper [imageSrc]="imageToEdit" (cropped)="onCropped($event)"></app-cropper>
-  </div>
-  <div *ngIf="croppedImage">
+  <section *ngIf="croppedImage">
     <h3>Bearbeitetes Bild</h3>
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <img [src]="croppedImage" [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
-        [style.background]="backgroundColor"
-        style="max-width: 300px; width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 4px solid #333; display: block;" />
-      <div style="margin: 10px 0;">
+    <div class="image-editor">
+      <img [src]="croppedImage"
+           [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
+           [style.background]="backgroundColor"
+           class="preview-image" />
+      <div class="controls">
         <label>
           Hintergrundfarbe:
           <input type="color" [(ngModel)]="backgroundColor" />
         </label>
-        <label style="margin-left: 20px;">
+        <label>
           <input type="checkbox" [(ngModel)]="isBlackAndWhite" />
           Schwarz/Weiß
         </label>
       </div>
       <button (click)="saveImage()">Bild speichern</button>
     </div>
-  </div>
-  <button (click)="addTodo()">➕ Hinzufügen</button>
-</section>
-<div *ngIf="imageInput">
-  <h4>Vorschau des zugeschnittenen Bilds:</h4>
-  <img [src]="imageInput" width="100" />
-</div>
-<app-cropper-functions (imageCropped)="onImageCropped($event)"></app-cropper-functions>
+  </section>
 
-<div class="todo-container">
+  <button (click)="toggleDarkMode()">🌙 Dark Mode umschalten</button>
+  <button (click)="toggleBlackAndWhite()">🌓 Schwarz/Weiß umschalten</button>
+
+  <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
+  <app-cropper-functions
+    *ngIf="imageToEdit"
+    [imageSrc]="imageToEdit"
+    (cropped)="onCropped($event)">
+  </app-cropper-functions>
+</div>

@@ -1,60 +1,10 @@
 <div>
-  <h2>Bild auswählen oder aufnehmen</h2>
-  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-  <button (click)="showCamera = !showCamera">
-    {{ showCamera ? 'Kamera schließen' : 'Kamera öffnen' }}
-  </button>
-  <app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
-</div>
-
-<div *ngIf="imageToEdit">
-  <h3>Bild bearbeiten</h3>
-  <app-cropper [imageSrc]="imageToEdit" (cropped)="onCropped($event)"></app-cropper>
-</div>
-<div *ngIf="croppedImage">
-  <h3>Bearbeitetes Bild</h3>
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <img [src]="croppedImage" [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
-      [style.background]="backgroundColor"
-      style="max-width: 300px; width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 4px solid #333; display: block;" />
-    <div style="margin: 10px 0;">
-      <label>
-        Hintergrundfarbe:
-        <input type="color" [(ngModel)]="backgroundColor" />
-      </label>
-      <label style="margin-left: 20px;">
-        <input type="checkbox" [(ngModel)]="isBlackAndWhite" />
-        Schwarz/Weiß
-      </label>
-    </div>
-    <button (click)="saveImage()">Bild speichern</button>
-  </div>
+  <img #image [src]="imageSrc" alt="Bild" />
+  <button type="button" (click)="cropImage()">Zentraler Ausschnitt</button>
+  <button type="button" (click)="applyGrayscale()">Schwarz-Weiß</button>
+  <button type="button" (click)="applyBrightness(1.2)">Aufhellen</button>
 </div>
 <div>
-  <h2>📤 Bild auswählen oder aufnehmen</h2>
-  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-
-  <div *ngIf="imageToEdit" class="editor-container">
-    <img #imageElement [src]="imageToEdit" alt="Zu bearbeitendes Bild" />
-    <button (click)="cropImage()">✂️ Zuschneiden</button>
-  </div>
-
-  <div *ngIf="croppedImage" class="preview-card">
-    <h3>🖼️ Vorschau</h3>
-    <div class="image-card">
-      <img [src]="croppedImage" class="profile-pic"
-        [style.filter]="'brightness(' + brightness + '%) contrast(' + contrast + '%) saturate(' + saturation + '%)'" />
-    </div>
-
-    <div class="sliders">
-      <label>Helligkeit</label>
-      <input type="range" min="50" max="150" [(ngModel)]="brightness" />
-      <label>Kontrast</label>
-      <input type="range" min="50" max="150" [(ngModel)]="contrast" />
-      <label>Sättigung</label>
-      <input type="range" min="50" max="150" [(ngModel)]="saturation" />
-    </div>
-
-    <button (click)="saveImage()">💾 Speichern</button>
-  </div>
+  <canvas #canvas></canvas>
 </div>
+<!-- Entferne die rekursive Einbindung! -->

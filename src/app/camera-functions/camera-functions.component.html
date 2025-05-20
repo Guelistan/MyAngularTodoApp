@@ -1,8 +1,44 @@
 <div class="camera-container">
   <video #videoElement width="320" height="240" autoplay></video>
+
   <div class="camera-controls">
     <button type="button" (click)="openCamera()">Kamera starten</button>
     <button type="button" (click)="takePicture()">Foto aufnehmen</button>
     <button type="button" (click)="stopCamera()">Kamera stoppen</button>
   </div>
+
+  @if (capturedImage) {
+    <div style="margin-top: 10px;">
+      <img [src]="capturedImage" alt="Aufgenommenes Bild" style="max-width: 100%; border: 1px solid #ccc;" />
+      <button type="button" (click)="downloadImage()">Bild herunterladen</button>
+    </div>
+  }
 </div>
+
+<!-- Bild auswählen -->
+<section class="add-image">
+  <h2>Bild auswählen oder aufnehmen</h2>
+  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+  <button type="button" (click)="showCamera.set(!showCamera())">
+    {{ showCamera() ? 'Kamera schließen' : 'Kamera öffnen' }}
+  </button>
+</section>
+
+<!-- Kamera anzeigen, wenn aktiviert -->
+@if (showCamera()) {
+  <section>
+    <h3>Kamera ist aktiv</h3>
+    <!-- Kamera-UI ist bereits oben eingebunden -->
+  </section>
+}
+
+<!-- Bild bearbeiten (Cropper) -->
+@if (imageToEdit) {
+  <section>
+    <h3>Bild bearbeiten</h3>
+    <app-cropper-functions
+      [imageSrc]="imageToEdit"
+      (cropped)="onCropped($event)">
+    </app-cropper-functions>
+  </section>
+}

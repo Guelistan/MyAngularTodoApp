@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
@@ -6,48 +6,34 @@ import { CropperFunctionsComponent } from '../cropper-functions/cropper-function
 
 interface Todo {
   text: string;
-  image?: string; // base64 oder URL
+  image?: string;
 }
 
 @Component({
   selector: 'app-todo',
   standalone: true,
   imports: [CommonModule, FormsModule, CameraFunctionsComponent, CropperFunctionsComponent],
-  template: `
-    <div>
-      <input [(ngModel)]="todoInput" placeholder="Neuer Task" (input)="onInput($event)" />
-      <button (click)="addTodo()">➕ Hinzufügen</button>
-      <ul>
-        <li *ngFor="let todo of todos; let i = index" class="todo-card">
-          <div>
-            <strong>{{ todo.text }}</strong>
-            <div *ngIf="todo.image">
-              <img [src]="todo.image" alt="Todo Bild" style="max-width:200px;display:block;margin:auto;" />
-            </div>
-            <div *ngIf="editIndex === i">
-              <input type="file" (change)="onFileSelected($event, i)" />
-              <button (click)="editImage(i)">Bild ändern</button>
-              <app-camera-functions (imageTaken)="onCameraImage($event, i)">
-              </app-camera-functions>
-              <app-cropper-functions [imageSrc]="todos[i].image ?? ''" (cropped)="onCropped($event, i)">
-              </app-cropper-functions>
-            </div>
-            <button (click)="removeTodo(i)">🗑️</button>
-            <button (click)="editIndex = i">Bild bearbeiten</button>
-            <button *ngIf="editIndex === i" (click)="editIndex = -1">Fertig</button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  `,
-  styles: [`
-    .todo-card { border: 1px solid #ccc; margin: 10px 0; padding: 10px; border-radius: 8px; }
-  `]
+  templateUrl: './todo.component.html',
+  styleUrls: ['./todo.component.css']
 })
 export class TodoComponent {
   todoInput = '';
   todos: Todo[] = [];
   editIndex = -1;
+
+  imageInput: any;
+  history: any[] = [];
+  currentDate: Date = new Date();
+  daysInMonth: any[] = [];
+
+  showCamera = false;
+  imageToEdit: string | null = null;
+  croppedImage: string | null = null;
+  isBlackAndWhite = false;
+  backgroundColor = '#ffffff';
+  selectedImage: HTMLImageElement | null = null;
+
+  isDarkMode = signal(false);
 
   addTodo() {
     if (this.todoInput.trim()) {
@@ -58,6 +44,9 @@ export class TodoComponent {
 
   removeTodo(index: number) {
     this.todos.splice(index, 1);
+    if (this.editIndex === index) {
+      this.editIndex = -1;
+    }
   }
 
   onFileSelected(event: Event, index: number) {
@@ -71,25 +60,44 @@ export class TodoComponent {
     }
   }
 
-  onCameraImage(event: any, index: number) {
-    // If event is a string (base64 image), use it directly; otherwise, extract image data
+  onCameraImage(event: any) {
     const image = typeof event === 'string' ? event : event?.image || event?.target?.result || '';
     if (image) {
-      this.todos[index].image = image;
+      this.croppedImage = image;
     }
   }
 
-  onCropped(image: string, index: number) {
-    this.todos[index].image = image;
-  }
-
-  onInput(event: Event) {
-    const input = event.target as HTMLInputElement | null;
-    const value = input?.value ?? '';
-    console.log('Input event:', value);
+  onCropped(image: string) {
+    this.croppedImage = image;
   }
 
   editImage(index: number) {
     this.editIndex = index;
+    this.imageToEdit = this.todos[index].image || null;
   }
+
+  saveImage() {
+    if (this.editIndex >= 0 && this.croppedImage) {
+      this.todos[this.editIndex].image = this.croppedImage;
+      this.editIndex = -1;
+      this.imageToEdit = null;
+    }
+  }
+
+  toggleDarkMode(): void {
+    this.isDarkMode.update(v => !v);
+    document.body.classList.toggle('dark-mode', this.isDarkMode());
+  }
+
+  toggleBlackAndWhite(): void {
+    this.isBlackAndWhite = !this.isBlackAndWhite;
+    document.body.classList.toggle('black-and-white', this.isBlackAndWhite);
+  }
+
+  // Platzhalter für Kalenderfunktionen
+  previousMonth() { }
+  nextMonth() { }
+  isToday(_day: any) { return false; }
+  saveTodos() { }
+  clearHistory() { this.history = []; }
 }
