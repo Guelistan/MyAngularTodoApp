@@ -90,3 +90,4 @@ export class CameraFunctionsComponent {
     this.capturedImage = croppedImage;
   }
 }
+

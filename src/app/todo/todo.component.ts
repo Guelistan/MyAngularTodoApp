@@ -10,6 +10,7 @@ interface Todo {
   image?: string;
   color?: string;
   date?: Date;
+  dueDate?: Date;
 }
 
 @Component({
@@ -21,6 +22,7 @@ interface Todo {
 })
 export class TodoComponent {
   todoInput = '';
+  todoDateInput = '';
   todos: Todo[] = [];
   editIndex = -1;
 
@@ -48,6 +50,17 @@ export class TodoComponent {
       const color = this.utilsService.getRandomRainbowColor();
       this.todos.push({ text: this.todoInput.trim(), color, date: this.currentDate });
       this.todoInput = '';
+
+
+
+      this.todos.push({
+        text: this.todoInput,
+        image: this.imageInput,
+        dueDate: new Date(this.todoDateInput)
+      });
+      this.todoInput = '';
+      this.imageInput = '';
+      this.todoDateInput = '';
     }
   }
 
@@ -58,6 +71,21 @@ export class TodoComponent {
     }
     if (this.editIndex === index) {
       this.editIndex = -1;
+    }
+  }
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    const file = event.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageInput = reader.result as string;
+      };
+      reader.readAsDataURL(file);
     }
   }
 
