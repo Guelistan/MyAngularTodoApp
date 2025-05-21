@@ -1,0 +1,7 @@
+{
+  ...
+  "files": [
+    // "src/src/main.ts"   <-- Diese Zeile entfernen oder korrigieren
+  ],
+  ...
+}
