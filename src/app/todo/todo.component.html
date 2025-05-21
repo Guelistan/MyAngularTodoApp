@@ -73,9 +73,9 @@
       <button (click)="saveImage()">Bild speichern</button>
     </div>
   </section>
-
-  <button (click)="toggleDarkMode()">🌙 Dark Mode umschalten</button>
-  <button (click)="toggleBlackAndWhite()">🌓 Schwarz/Weiß umschalten</button>
+  <!--
+  <button (click)="toggleDarkMode()">🌙 Dark</button>
+  <button (click)="toggleBlackAndWhite()">🌓 Schwarz/Weiß umschalten</button>-->
 
   <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
   <app-cropper-functions *ngIf="imageToEdit" [imageSrc]="imageToEdit" (cropped)="onCropped($event)">

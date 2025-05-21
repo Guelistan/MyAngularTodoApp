@@ -1,24 +1,31 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import Cropper from 'cropperjs';
+
 @Component({
   selector: 'app-cropper-functions',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './cropper-functions.component.html',
-  styleUrls: ['./cropper-functions.component.css']
+  styleUrls: ['./cropper-functions.component.css'],
 })
 export class CropperFunctionsComponent {
   @Input() imageSrc!: string;
+  @Input() shape: 'circle' | 'oval' | 'square' = 'square';
   @Output() cropped = new EventEmitter<string>();
+
   @ViewChild('image', { static: true }) imageElement!: ElementRef<HTMLImageElement>;
-  // Implement this method or remove it if not needed
-  onImageCropped(image: string, index: number): void {
-    // TODO: handle cropped image if needed
-  }
 
   emitCroppedImage(canvas: HTMLCanvasElement) {
-    const editedImage = canvas.toDataURL('image/png');
+    const finalCanvas = this.applyMask(canvas);
+    const editedImage = finalCanvas.toDataURL('image/png');
     this.cropped.emit(editedImage);
   }
 
@@ -30,9 +37,63 @@ export class CropperFunctionsComponent {
     canvas.height = size;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, size, size);
+      ctx.drawImage(
+        img,
+        (img.naturalWidth - size) / 2,
+        (img.naturalHeight - size) / 2,
+        size,
+        size,
+        0,
+        0,
+        size,
+        size
+      );
     }
     this.emitCroppedImage(canvas);
+  }
+
+  applyMask(canvas: HTMLCanvasElement): HTMLCanvasElement {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return canvas;
+
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = canvas.width;
+    maskCanvas.height = canvas.height;
+    const maskCtx = maskCanvas.getContext('2d');
+    if (!maskCtx) return canvas;
+
+    maskCtx.fillStyle = '#000';
+    maskCtx.beginPath();
+    if (this.shape === 'circle') {
+      const r = canvas.width / 2;
+      maskCtx.arc(r, r, r, 0, Math.PI * 2);
+    } else if (this.shape === 'oval') {
+      maskCtx.ellipse(
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.width / 2,
+        canvas.height / 2.2,
+        0,
+        0,
+        Math.PI * 2
+      );
+    } else {
+      maskCtx.rect(0, 0, canvas.width, canvas.height);
+    }
+    maskCtx.closePath();
+    maskCtx.fill();
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const maskData = maskCtx.getImageData(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      imageData.data[i + 3] = maskData.data[i + 3];
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.putImageData(imageData, 0, 0);
+
+    return canvas;
   }
 
   applyGrayscale() {
@@ -72,9 +133,5 @@ export class CropperFunctionsComponent {
       ctx.putImageData(imageData, 0, 0);
     }
     this.emitCroppedImage(canvas);
-  }
-
-  onCropped(event: any) {
-    // your code here
   }
 }

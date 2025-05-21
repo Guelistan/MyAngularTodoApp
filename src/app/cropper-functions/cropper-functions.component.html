@@ -1,11 +1,17 @@
-<div>
-  <img #image [src]="imageSrc" alt="image to crop" />
-  <img #image [src]="imageSrc" alt="Bild" />
-  <button type="button" (click)="cropImage()">Zentraler Ausschnitt</button>
-  <button type="button" (click)="applyGrayscale()">Schwarz-Weiß</button>
-  <button type="button" (click)="applyBrightness(1.2)">Aufhellen</button>
+<!--{{/*  <div class="cropper-wrapper">
+  <img #image [src]="imageSrc" alt="Bild zum Bearbeiten" class="editable-image" />
+
+  <div class="controls">
+    <button (click)="cropImage()">Zentraler Ausschnitt</button>
+    <button (click)="applyGrayscale()">Schwarz-Weiß</button>
+    <button (click)="applyBrightness(1.2)">Aufhellen</button>
+  </div>
 </div>
-<div>
-  <canvas #canvas></canvas>
-</div>
-<!-- Entferne die rekursive Einbindung! -->
+  */}}-->
+  <div class="cropper-wrapper">
+    <img #image [src]="imageSrc" alt="Bild zum Bearbeiten" class="editable-image" />
+
+    <div class="controls">
+      <button (click)="cropImage()">Zentraler Ausschnitt</button>
+    </div>
+  </div>
