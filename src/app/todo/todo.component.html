@@ -39,10 +39,6 @@
   <section class="calendar">
     <h2>
       <div class="drop-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-        📥 Bild hierher ziehen oder auswählen
-      </div>
-
-      <div class="drop-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
         📥 Bild hierher ziehen
       </div>
 
@@ -62,10 +58,8 @@
   <section *ngIf="croppedImage">
     <h3>Bearbeitetes Bild</h3>
     <div class="image-editor">
-      <img [src]="croppedImage"
-           [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
-           [style.background]="backgroundColor"
-           class="preview-image" />
+      <img [src]="croppedImage" [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
+        [style.background]="backgroundColor" class="preview-image" />
       <div class="controls">
         <label>
           Hintergrundfarbe:
@@ -84,9 +78,6 @@
   <button (click)="toggleBlackAndWhite()">🌓 Schwarz/Weiß umschalten</button>
 
   <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
-  <app-cropper-functions
-    *ngIf="imageToEdit"
-    [imageSrc]="imageToEdit"
-    (cropped)="onCropped($event)">
+  <app-cropper-functions *ngIf="imageToEdit" [imageSrc]="imageToEdit" (cropped)="onCropped($event)">
   </app-cropper-functions>
 </div>

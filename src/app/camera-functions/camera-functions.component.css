@@ -111,3 +111,22 @@ section {
 :host-context(.dark-mode) button:hover {
   background-color: #555;
 }
+.shape-options {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.shape-options button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.shape-options button:hover {
+  background: #e0e0e0;
+}

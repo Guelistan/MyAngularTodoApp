@@ -4,9 +4,7 @@ import {
   EventEmitter,
   Output,
   ViewChild,
-  Signal,
-  signal,
-  effect
+  signal
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
@@ -26,9 +24,11 @@ export class CameraFunctionsComponent {
 
   stream: MediaStream | null = null;
   capturedImage: string | null = null;
+  imageToEdit: string | null = null;
 
   showCamera = signal(false);
-  imageToEdit: string | null = null;
+  cameraPanelOpen = false;
+  cropShape = signal<'oval' | 'circle' | 'square'>('square');
 
   constructor(private sanitizer: DomSanitizer) { }
 
@@ -89,5 +89,9 @@ export class CameraFunctionsComponent {
   onCropped(croppedImage: string): void {
     this.capturedImage = croppedImage;
   }
-}
 
+  setCropShape(shape: 'oval' | 'circle' | 'square') {
+    this.cropShape.set(shape);
+    console.log('Gewählte Bildform:', shape);
+  }
+}
