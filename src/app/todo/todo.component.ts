@@ -1,10 +1,11 @@
-import { Component, signal, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
 import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
 import { UtilsService } from '../utils.service';
 import { ImageEditor } from '../image-editor';
+import { CalendarComponent } from '../calendar/calendar.component';
 
 interface Todo {
   text: string;
@@ -12,43 +13,50 @@ interface Todo {
   color?: string;
   date?: Date;
   dueDate?: Date;
-  todoDateInput?: string;
   id: number;
   titel: string;
   description: string;
   completed: boolean;
-  
 }
 
 @Component({
   selector: 'app-todo',
   standalone: true,
-  imports: [CommonModule, FormsModule, CameraFunctionsComponent, CropperFunctionsComponent],
+  imports: [CommonModule, FormsModule, CameraFunctionsComponent, CropperFunctionsComponent, CalendarComponent],
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.css']
 })
 export class TodoComponent {
-  @Input() todos: any[] = [];
+  @Input() todos: Todo[] = [];
   todoInput = '';
   todoDateInput = '';
   editIndex = -1;
 
-  imageInput: any;
-  history: any[] = [];
+  imageInput: string = '';
+  history: string[] = [];
   currentDate: Date = new Date();
-  daysInMonth: any[] = [];
 
+  showCropper = false;
   showCamera = false;
+  showCalendar = false;
   imageToEdit: string | null = null;
   croppedImage: string | null = null;
   isBlackAndWhite = false;
   backgroundColor = '#ffffff';
-  selectedImage: HTMLImageElement | null = null;
-
-  isDarkMode = signal(false);
+saveImage: any;
 
   constructor(private utilsService: UtilsService) {
-    this.todos = this.utilsService.loadTodosFromLocalStorage();
+    this.todos = this.utilsService.loadTodosFromLocalStorage().map((item: any, idx: number) => ({
+      text: item.text,
+      image: item.image,
+      color: item.color,
+      date: item.date ? new Date(item.date) : undefined,
+      dueDate: item.dueDate ? new Date(item.dueDate) : undefined,
+      id: item.id ?? Date.now() + idx,
+      titel: item.titel ?? '',
+      description: item.description ?? '',
+      completed: item.completed ?? false
+    }));
     this.history = this.utilsService.loadHistory();
   }
 
@@ -76,11 +84,16 @@ export class TodoComponent {
         color,
         date: this.currentDate,
         image: this.imageInput,
-        dueDate: this.todoDateInput ? new Date(this.todoDateInput) : undefined
+        dueDate: this.todoDateInput ? new Date(this.todoDateInput) : undefined,
+        id: Date.now(),
+        titel: '',
+        description: '',
+        completed: false
       });
       this.todoInput = '';
       this.imageInput = '';
       this.todoDateInput = '';
+      this.saveTodos();
     }
   }
 
@@ -92,6 +105,7 @@ export class TodoComponent {
     if (this.editIndex === index) {
       this.editIndex = -1;
     }
+    this.saveTodos();
   }
 
   onFileSelected(event: Event, index: number) {
@@ -100,50 +114,52 @@ export class TodoComponent {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.todos[index].image = e.target.result;
+        this.saveTodos();
       };
       reader.readAsDataURL(input.files[0]);
     }
   }
 
-  onCameraImage(event: any) {
-    const image = typeof event === 'string' ? event : event?.image || event?.target?.result || '';
-    if (image) {
-      this.croppedImage = image;
+  onCameraImage(image: string) {
+    this.imageToEdit = image;
+    this.showCropper = true;
+    this.showCamera = false;
+  }
+
+  onCropped(cropped: string) {
+    this.croppedImage = cropped;
+    this.showCropper = false;
+    if (this.editIndex >= 0 && this.croppedImage) {
+      this.todos[this.editIndex].image = this.croppedImage;
+      this.saveTodos();
+      this.editIndex = -1;
+      this.imageToEdit = null;
+      this.croppedImage = null;
     }
   }
 
-  onCropped(image: string) {
-    this.croppedImage = image;
-  }
-
-  ImageEditor: ImageEditor | null = null;
   editImage(index: number) {
     this.editIndex = index;
     this.imageToEdit = this.todos[index].image || null;
+    this.showCropper = true;
+    this.showCamera = false;
   }
 
-  saveImage() {
-    if (this.editIndex >= 0 && this.croppedImage) {
-      this.todos[this.editIndex].image = this.croppedImage;
-      this.editIndex = -1;
-      this.imageToEdit = null;
-    }
+  openCropperFromImage(image: string) {
+    this.imageToEdit = image;
+    this.showCropper = true;
   }
 
-  toggleDarkMode(): void {
-    this.isDarkMode.update(v => !v);
-    document.body.classList.toggle('dark-mode', this.isDarkMode());
+  toggle(section: 'cropper' | 'camera' | 'calendar') {
+    this.showCropper = section === 'cropper' ? !this.showCropper : false;
+    this.showCamera = section === 'camera' ? !this.showCamera : false;
+    this.showCalendar = section === 'calendar' ? !this.showCalendar : false;
   }
 
-  toggleBlackAndWhite(): void {
+  toggleBlackAndWhite() {
     this.isBlackAndWhite = !this.isBlackAndWhite;
     document.body.classList.toggle('black-and-white', this.isBlackAndWhite);
   }
-
-  // Platzhalter für Kalenderfunktionen
-  previousMonth() { }
-  nextMonth() { }
-  isToday(_day: any) { return false; }
 
   saveTodos() {
     this.utilsService.saveTodosToLocalStorage(this.todos);

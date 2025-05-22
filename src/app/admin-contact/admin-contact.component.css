@@ -1,0 +1,11 @@
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-content.open {
+  max-height: 2000px;
+  /* ausreichend für alle Tools */
+  margin-top: 1rem;
+}

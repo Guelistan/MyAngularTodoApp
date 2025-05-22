@@ -8,5 +8,5 @@ export const routes: Routes = [
   { path: 'camera', loadComponent: () => import('./camera-functions/camera-functions.component').then(m => m.CameraFunctionsComponent) },
   { path: 'utils', loadComponent: () => import('./utils.service').then(m => m.UtilsService) },
   { path: 'calendar', loadComponent: () => import('./calendar/calendar.component').then(m => m.CalendarComponent) },
-
+  { path: 'admin-contact', loadComponent: () => import('./admin-contact/admin-contact.component').then(m => m.AdminContactComponent) },
 ];

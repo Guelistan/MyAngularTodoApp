@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
 })
 export class CropperFunctionsComponent {
   @Input() imageSrc!: string;
-  @Input() shape: 'circle' | 'oval' | 'square' = 'square';
+  @Input() shape: 'oval' | 'circle' | 'square' = 'square';
   @Output() cropped = new EventEmitter<string>();
 
   @ViewChild('image', { static: true }) imageElement!: ElementRef<HTMLImageElement>;

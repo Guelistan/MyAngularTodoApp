@@ -1,0 +1,55 @@
+<!-- admin-contact.component.html -->
+
+<div class="dashboard">
+  <!-- Aufgabenbereich -->
+  <div class="card">
+    <h2>📝 Aufgabenliste</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Aufgabe</th>
+          <th>Fällig</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of tasks">
+          <td>{{ task.title }}</td>
+          <td>{{ task.dueDate | date }}</td>
+          <td>{{ task.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Rechte Seite: Werkzeuge -->
+  <div class="card">
+    <!-- Kalender -->
+    <button class="collapsible" (click)="toggle('calendar')">📅 Kalender</button>
+    <div class="collapsible-content" [class.open]="showCalendar">
+      <app-calendar></app-calendar>
+    </div>
+
+    <!-- Bildeditor -->
+    <button class="collapsible" (click)="toggle('cropper')">✂️ Bild bearbeiten</button>
+    <div class="collapsible-content" [class.open]="showCropper">
+      <app-cropper-functions *ngIf="imageToEdit" [imageSrc]="imageToEdit" [shape]="cropShape"
+        (cropped)="onCropped($event)">
+      </app-cropper-functions>
+    </div>
+
+    <!-- Kamera -->
+    <button class="collapsible" (click)="toggle('camera')">📷 Kamera aufnehmen</button>
+    <div class="collapsible-content" [class.open]="showCamera">
+      <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
+    </div>
+  </div>
+</div>
+
+<!-- Kontakte unten -->
+<div class="contact-cards">
+  <div class="contact-card" *ngFor="let contact of contacts">
+    <h3>{{ contact.name }}</h3>
+    <p>{{ contact.email }}</p>
+  </div>
+</div>
