@@ -1,5 +1,4 @@
-
-import { Component } from '@angular/core'; 
+import { Component } from '@angular/core';
 import { ImageConfig } from '@angular/common';
 
 export class ImageEditor {
@@ -34,5 +33,28 @@ export class ImageEditor {
       localStorage.setItem('myImages', JSON.stringify(images));
       alert('Bild gespeichert!');
     }
+  }
+
+  editImage(image: string) {
+    this.imageToEdit = image;
+  }
+  cropImage(image: string): void {
+    switch (image) {
+      case 'camera':
+        image = this.imageToEdit || '';
+        break;
+      case 'file':
+        image = this.imageToEdit || '';
+        break;
+      case 'file':
+        image = this.imageToEdit || '';
+        image = this.imageToEdit || '';
+
+        break;
+      default:
+        console.error('Invalid image type');
+        break;
+    }
+    console.log('cropImage called with', image);
   }
 }

@@ -1,4 +1,29 @@
-<!-- admin-contact.component.html -->
+<!--
+  admin-contact.component.html
+
+  Diese Komponente stellt das Admin-Kontakt-Dashboard dar.
+  Sie besteht aus folgenden Bereichen:
+
+  1. Aufgabenliste:
+     - Zeigt eine Tabelle aller Aufgaben (tasks) mit Titel, Fälligkeitsdatum und Status.
+     - Die Aufgaben werden dynamisch mit *ngFor aus einer tasks-Liste generiert.
+
+  2. Werkzeuge (rechte Seite):
+     - Kalender: Ein- und ausklappbar, zeigt eine Kalender-Komponente (<app-calendar>).
+     - Bildeditor: Ein- und ausklappbar, zeigt einen Bildeditor (<app-cropper-functions>), wenn ein Bild zum Bearbeiten vorhanden ist.
+     - Kamera: Ein- und ausklappbar, zeigt eine Kamera-Komponente (<app-camera-functions>) zur Aufnahme von Bildern.
+
+  3. Kontakte:
+     - Unten werden Kontaktkarten für alle Kontakte (contacts) angezeigt.
+     - Jede Karte zeigt Name und E-Mail-Adresse des Kontakts.
+
+  Erwartetes Verhalten:
+  - Die Buttons für Kalender, Bildeditor und Kamera steuern jeweils das Anzeigen/Ausblenden der zugehörigen Bereiche.
+  - Die Komponenten <app-calendar>, <app-cropper-functions> und <app-camera-functions> werden eingebunden und kommunizieren über Events mit der Hauptkomponente.
+  - Die Daten für Aufgaben und Kontakte werden über die Variablen tasks und contacts bereitgestellt.
+-->
+
+<!-- Dashboard-Hauptcontainer -->
 
 <div class="dashboard">
   <!-- Aufgabenbereich -->

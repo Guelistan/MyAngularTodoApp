@@ -8,10 +8,13 @@
   </div>
 </div>
   */}}-->
-  <div class="cropper-wrapper">
-    <img #image [src]="imageSrc" alt="Bild zum Bearbeiten" class="editable-image" />
+<div class="cropper-wrapper">
+  <img #image src="imageSrc" alt="Bild zum Bearbeiten" class="editable-image" />
 
-    <div class="controls">
-      <button (click)="cropImage()">Zentraler Ausschnitt</button>
-    </div>
+  <div class="controls">
+    <button (click)="cropImage()">Zentraler Ausschnitt</button>
+    <button (click)="applyGrayscale()">Schwarz-Weiß</button>
+    <button (click)="applyBrightness(1.2)">Aufhellen</button>
   </div>
+</div>
+<router-outlet></router-outlet>

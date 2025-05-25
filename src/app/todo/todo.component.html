@@ -1,66 +1,64 @@
-<!-- Aufgabenliste -->
-<section class="todo-list">
-  <h2>📋 Aktuelle Aufgaben</h2>
-  <ul>
-    <li *ngFor="let todo of todos; let i = index">
-      <span>{{ todo.text }}</span>
-      <img
-        *ngIf="todo.image"
-        [src]="todo.image"
-        alt="Bild"
-        width="50"
-        (click)="openCropperFromImage(todo.image)"
-        style="cursor:pointer;"
-      />
-      <button (click)="editImage(i)">✏️ Bearbeiten</button>
-      <button (click)="removeTodo(i)">🗑️ Entfernen</button>
-    </li>
-  </ul>
-</section>
+<!-- Button zum Ein- und Ausklappen der ToDo-Liste -->
+<div>
+  <button (click)="toggleCollapse()">Toggle</button>
+</div>
 
-<!-- Tools -->
-<section>
-  <button (click)="toggle('camera')">📷 Kamera anzeigen</button>
-  <button (click)="toggle('cropper')">✂️ Bildeditor öffnen</button>
-  <button (click)="toggle('calendar')">📅 Kalender anzeigen</button>
-</section>
-
-<!-- Kamera -->
-<app-camera-functions
-  *ngIf="showCamera"
-  (captured)="onCameraImage($event)">
-</app-camera-functions>
-
-<!-- Cropper -->
-<app-cropper-functions
-  *ngIf="showCropper && imageToEdit"
-  [imageSrc]="imageToEdit"
-  (cropped)="onCropped($event)">
-</app-cropper-functions>
-
-<!-- Kalender -->
-<app-calendar *ngIf="showCalendar"></app-calendar>
-
-<!-- Bearbeitetes Bild -->
-<section *ngIf="croppedImage">
-  <h3>🖼️ Bearbeitetes Bild</h3>
-  <div class="image-editor">
-    <img
-      [src]="croppedImage"
-      [style.filter]="isBlackAndWhite ? 'grayscale(100%)' : ''"
-      [style.background]="backgroundColor"
-      class="preview-image"
-    />
-    <div class="controls">
-      <label>
-        Hintergrundfarbe:
-        <input type="color" [(ngModel)]="backgroundColor" />
-      </label>
-      <label>
-        <input type="checkbox" [(ngModel)]="isBlackAndWhite" />
-        Schwarz/Weiß
-      </label>
+<!-- ToDo-Liste wird angezeigt, wenn showTodos true ist -->
+<div *ngIf="showTodos" class="todo-container">
+  <!-- Iteration über alle ToDos -->
+  <div *ngFor="let todo of todos" class="todo-card">
+    <!-- Platzhalter für das Bild des ToDos -->
+    <div class="image-placeholder">
+      <!-- Bild wird angezeigt, wenn vorhanden -->
+      <img *ngIf="todo.image" [src]="todo.image" alt="User Image">
     </div>
-    <button (click)="saveImage()">💾 Bild speichern</button>
+    <div class="todo-content">
+      <!-- Titel des ToDos -->
+      <h3>{{ todo.titel }}</h3>
+      <!-- Beschreibung des ToDos -->
+      <p>{{ todo.description }}</p>
+      <!-- Button zum Bearbeiten des Bildes -->
+      <button (click)="editImage(todo.id)">Bild bearbeiten</button>
+      <!-- Button zum Löschen des ToDos -->
+      <button (click)="removeTodo(todo.id)">Löschen</button>
+    </div>
   </div>
-</section>
+</div>
+
+<!-- Formular zum Hinzufügen eines neuen ToDos -->
+<div class="todo-form">
+  <h2>Neue Aufgabe hinzufügen</h2>
+  <form (ngSubmit)="addTodo()">
+    <label for="titel">Titel:</label>
+    <input type="text" id="titel" [(ngModel)]="newTodo.titel" name="titel" required>
+
+    <label for="description">Beschreibung:</label>
+    <textarea id="description" [(ngModel)]="newTodo.description" name="description" required></textarea>
+
+    <label for="image">Bild-URL:</label>
+    <input type="text" id="image" [(ngModel)]="newTodo.image" name="image">
+
+    <button type="submit">Aufgabe hinzufügen</button>
+  </form>
+
+  <!-- Button zum Löschen aller ToDos -->
+  <button (click)="todos = []">Alle Aufgaben löschen</button>
+</div>
+
+<!-- Platzhalter für weitere Routen-Komponenten -->
+<router-outlet></router-outlet>
+
+<!-- Bildbearbeitungsbereich mit Cropper -->
+<div class="cropper-wrapper">
+  <img #image src="imageUrl" alt="Bild zum Bearbeiten" class="editable-image" />
+  <div class="controls">
+    <!-- Button zum Zuschneiden des Bildes -->
+    <button (click)="cropImage()">Zentraler Ausschnitt</button>
+  </div>
+</div>
+
+<!-- Komponente für zusätzliche Cropper-Funktionen -->
+<app-cropper-functions ...></app-cropper-functions>
+
+<!-- Link zur Admin-Kontaktseite -->
+<a routerLink="/admin-contact">Admin Kontakte</a>

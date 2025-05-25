@@ -42,7 +42,7 @@
     <h3>🛠️ Bild bearbeiten</h3>
 
     <!-- Cropper-Komponente mit Form-Input -->
-    <app-cropper-functions [imageSrc]="imageToEdit" [shape]="cropShape()" (cropped)="onCropped($event)">
+    <app-cropper-functions imagesrc="imageToEdit" [shape]="cropShape()" (cropped)="onCropped($event)">
     </app-cropper-functions>
 
     <!-- Formauswahl -->
@@ -73,6 +73,5 @@
   </div>
   }
 </div>
-<app-cropper-functions [imageSrc]="imageToEdit ?? ''" [shape]="cropShape()"
-  (cropped)="onCropped($event)">
+<app-cropper-functions imageSrc="imageToEdit ?? ''" [shape]="cropShape()" (cropped)="onCropped($event)">
 </app-cropper-functions>

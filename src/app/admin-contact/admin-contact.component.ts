@@ -153,40 +153,69 @@ export class AdminContactComponent implements OnInit {
       reader.readAsDataURL(file);
     }
   }
-}
+ }
  */
 
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CalendarComponent } from '../calendar/calendar.component';
+import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
+import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
+
+@Component({
+  selector: 'app-admin-contact',
+  standalone: true,
+  templateUrl: './admin-contact.component.html',
+  styleUrls: ['./admin-contact.component.css'],
+  imports: [
+    CommonModule,
+    CalendarComponent,
+    CropperFunctionsComponent,
+    CameraFunctionsComponent
+  ]
+})
 export class AdminContactComponent {
+  // Steuert, ob die Kamera angezeigt wird
   showCamera = false;
+  // Steuert, ob der Bild-Zuschneider angezeigt wird
   showCropper = false;
+  // Steuert, ob der Kalender angezeigt wird
   showCalendar = false;
 
+  // Bild, das bearbeitet werden soll (Base64 oder URL)
   imageToEdit: string = '';
+  // Ergebnis des zugeschnittenen Bildes
   croppedImage: string = '';
+  // Form des Zuschnitts: Kreis, Oval oder Quadrat
   cropShape: 'circle' | 'oval' | 'square' = 'square';
 
+  // Aufgabenliste mit Titel, Fälligkeitsdatum und Status
   tasks = [
     { title: 'Todo-App erweitern', dueDate: '2025-06-01', status: 'Offen' },
     // ... dynamisch per Service
   ];
 
+  // Kontaktliste mit Name und E-Mail
   contacts = [
     { name: 'Max Mustermann', email: 'max@example.com' },
     { name: 'Lisa Musterfrau', email: 'lisa@example.com' }
   ];
 
+  // Schaltet die Anzeige von Kalender, Cropper oder Kamera um
   toggle(section: 'calendar' | 'cropper' | 'camera') {
     this.showCalendar = section === 'calendar' ? !this.showCalendar : false;
     this.showCropper = section === 'cropper' ? !this.showCropper : false;
     this.showCamera = section === 'camera' ? !this.showCamera : false;
   }
 
+  // Wird aufgerufen, wenn ein Bild von der Kamera aufgenommen wurde
   onCameraImage(image: string) {
     this.imageToEdit = image;
     this.showCropper = true;
     this.showCamera = false;
   }
 
+  // Wird aufgerufen, wenn das Bild zugeschnitten wurde
   onCropped(image: string) {
     this.croppedImage = image;
     this.imageToEdit = '';

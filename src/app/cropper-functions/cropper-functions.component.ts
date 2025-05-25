@@ -3,25 +3,33 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnInit,
   Output,
   ViewChild,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { routes } from '../app.routes';
+import { Router } from 'express';
+import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-cropper-functions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, RouterOutlet],
   templateUrl: './cropper-functions.component.html',
   styleUrls: ['./cropper-functions.component.css'],
 })
-export class CropperFunctionsComponent {
+export class CropperFunctionsComponent implements OnInit {
   @Input() imageSrc!: string;
-  @Input() shape: 'oval' | 'circle' | 'square' = 'square';
+  @Input() shape: string = 'square'; // or your preferred default
   @Output() cropped = new EventEmitter<string>();
 
   @ViewChild('image', { static: true }) imageElement!: ElementRef<HTMLImageElement>;
+
+  ngOnInit() {
+    // Initialization logic if needed
+  }
 
   emitCroppedImage(canvas: HTMLCanvasElement) {
     const finalCanvas = this.applyMask(canvas);

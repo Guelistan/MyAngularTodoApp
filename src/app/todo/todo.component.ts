@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
@@ -6,6 +6,7 @@ import { CropperFunctionsComponent } from '../cropper-functions/cropper-function
 import { UtilsService } from '../utils.service';
 import { ImageEditor } from '../image-editor';
 import { CalendarComponent } from '../calendar/calendar.component';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 interface Todo {
   text: string;
@@ -19,14 +20,66 @@ interface Todo {
   completed: boolean;
 }
 
+/**
+ * Die TodoComponent verwaltet die Anzeige und Bearbeitung von ToDos.
+ * 
+ * @component
+ * @selector app-todo
+ * 
+ * @property {Todo[]} todos - Liste der aktuellen ToDos.
+ * @property {string} todoInput - Eingabefeld für neuen ToDo-Text.
+ * @property {string} todoDateInput - Eingabefeld für das Fälligkeitsdatum eines neuen ToDos.
+ * @property {number} editIndex - Index des aktuell bearbeiteten ToDos, -1 wenn kein ToDo bearbeitet wird.
+ * @property {string} imageInput - Temporärer Speicher für das Bild eines neuen ToDos.
+ * @property {string[]} history - Verlauf der gelöschten ToDos.
+ * @property {Date} currentDate - Aktuelles Datum.
+ * @property {boolean} showCropper - Steuert die Sichtbarkeit des Bild-Croppers.
+ * @property {boolean} showCamera - Steuert die Sichtbarkeit der Kamera-Komponente.
+ * @property {boolean} showCalendar - Steuert die Sichtbarkeit des Kalenders.
+ * @property {string | null} imageToEdit - Bild, das aktuell bearbeitet wird.
+ * @property {string | null} croppedImage - Das zuletzt zugeschnittene Bild.
+ * @property {boolean} isBlackAndWhite - Steuert den Schwarz-Weiß-Modus.
+ * @property {string} backgroundColor - Hintergrundfarbe für ToDos.
+ * @property {any} saveImage - Platzhalter für gespeicherte Bilder.
+ * @property {boolean} showTodos - Steuert die Sichtbarkeit der ToDo-Liste.
+ * @property {any} newTodo - Platzhalter für ein neues ToDo.
+ * @property {string | null} image - Temporäres Bild für die Bearbeitung.
+ * @property {ImageEditor} imageEditor - Instanz des Bildeditors.
+ * @property {Todo[]} todosToShow - Gefilterte ToDos zur Anzeige.
+ * @property {boolean} showImage - Steuert die Anzeige von Bildern in ToDos.
+ * 
+ * @method toggleCalendar - Öffnet oder schließt den Kalender.
+ * @method toggleCropper - Öffnet oder schließt den Bild-Cropper.
+ * @method toggleCamera - Öffnet oder schließt die Kamera-Komponente.
+ * @method onDragOver - Verhindert das Standardverhalten beim Drag&Drop.
+ * @method onDrop - Lädt ein Bild per Drag&Drop in das Eingabefeld.
+ * @method addTodo - Fügt ein neues ToDo zur Liste hinzu.
+ * @method removeTodo - Entfernt ein ToDo aus der Liste und fügt es dem Verlauf hinzu.
+ * @method onFileSelected - Lädt ein Bild aus einer Datei für ein ToDo.
+ * @method onCameraImage - Setzt das Bild aus der Kamera zur Bearbeitung.
+ * @method onCropped - Speichert das zugeschnittene Bild im ToDo.
+ * @method editImage - Öffnet den Cropper für das Bild eines ToDos.
+ * @method openCropperFromImage - Öffnet den Cropper für ein beliebiges Bild.
+ * @method toggle - Schaltet die Sichtbarkeit von Cropper, Kamera oder Kalender.
+ * @method toggleBlackAndWhite - Aktiviert oder deaktiviert den Schwarz-Weiß-Modus.
+ * @method saveTodos - Speichert die ToDos im LocalStorage.
+ * @method clearHistory - Löscht den Verlauf der gelöschten ToDos.
+ * @method addToHistory - Fügt einen ToDo-Text dem Verlauf hinzu.
+ * @method toggleCollapse - Blendet die ToDo-Liste ein oder aus.
+ * @method onImageChanged - Aktualisiert das aktuelle Bild.
+ * @method cropImage - Schneidet das aktuelle Bild mit dem ImageEditor zu.
+ * 
+ * @constructor Lädt ToDos und Verlauf aus dem LocalStorage.
+ * @ngOnInit Initialisiert die Anzeige der ToDo-Liste.
+ */
 @Component({
   selector: 'app-todo',
   standalone: true,
-  imports: [CommonModule, FormsModule, CameraFunctionsComponent, CropperFunctionsComponent, CalendarComponent],
+  imports: [CommonModule, FormsModule, RouterOutlet, CropperFunctionsComponent],
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.css']
 })
-export class TodoComponent {
+export class TodoComponent implements OnInit {
   @Input() todos: Todo[] = [];
   todoInput = '';
   todoDateInput = '';
@@ -43,8 +96,26 @@ export class TodoComponent {
   croppedImage: string | null = null;
   isBlackAndWhite = false;
   backgroundColor = '#ffffff';
-saveImage: any;
+  saveImage: any;
+  showTodos: boolean = true;
+  newTodo: any;
 
+  image: string | null = null;
+  imageEditor: ImageEditor = new ImageEditor();
+
+  todosToShow: Todo[] = [];
+  @Input() showImage: boolean = false;
+
+  toggleCalendar() {
+    this.showCalendar = !this.showCalendar;
+  }
+
+  toggleCropper() {
+    this.showCropper = !this.showCropper;
+  }
+  toggleCamera() {
+    this.showCamera = !this.showCamera;
+  }
   constructor(private utilsService: UtilsService) {
     this.todos = this.utilsService.loadTodosFromLocalStorage().map((item: any, idx: number) => ({
       text: item.text,
@@ -58,6 +129,10 @@ saveImage: any;
       completed: item.completed ?? false
     }));
     this.history = this.utilsService.loadHistory();
+  }
+
+  ngOnInit() {
+    this.showTodos = true;
   }
 
   onDragOver(event: DragEvent) {
@@ -174,4 +249,24 @@ saveImage: any;
     this.history = this.utilsService.addToHistory(task, this.history);
     this.utilsService.saveHistory(this.history);
   }
+
+  toggleCollapse(): void {
+    this.showTodos = !this.showTodos;
+  }
+
+  onImageChanged(newImage: string) {
+    this.image = newImage;
+  }
+
+  // Add this method to fix the missing cropImage error
+  cropImage(): void {
+    if (this.imageToEdit) {
+      this.imageEditor.cropImage(this.imageToEdit);
+    } else {
+      console.error('No image to crop');
+    }
+
+    console.log('cropImage called');
+  }
 }
+
