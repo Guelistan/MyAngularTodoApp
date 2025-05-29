@@ -1,12 +1,18 @@
 import { Routes } from '@angular/router';
+import { TodoComponent } from './todo/todo.component';
+import { AdminContactComponent } from './admin-contact/admin-contact.component';
+import { CalendarComponent } from './calendar/calendar.component';
+import { CameraFunctionsComponent } from './camera-functions/camera-functions.component';
+import { CropperFunctionsComponent } from './cropper-functions/cropper-functions.component';
+import { GhoastAdminComponent } from './ghoast-admin/ghoast-admin.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'todo', pathMatch: 'full' },
-  { path: 'todo', loadComponent: () => import('./todo/todo.component').then(m => m.TodoComponent) },
-  { path: 'todo/:id', loadComponent: () => import('./todo/todo.component').then(m => m.TodoComponent) },
-  { path: 'cropper', loadComponent: () => import('./cropper-functions/cropper-functions.component').then(m => m.CropperFunctionsComponent) },
-  { path: 'camera', loadComponent: () => import('./camera-functions/camera-functions.component').then(m => m.CameraFunctionsComponent) },
-  { path: 'utils', loadComponent: () => import('./utils.service').then(m => m.UtilsService) },
-  { path: 'calendar', loadComponent: () => import('./calendar/calendar.component').then(m => m.CalendarComponent) },
-  { path: 'admin-contact', loadComponent: () => import('./admin-contact/admin-contact.component').then(m => m.AdminContactComponent) },
+  { path: 'todo', component: TodoComponent },
+  { path: 'admin-contact', component: AdminContactComponent },
+  { path: 'calendar', component: CalendarComponent },
+  { path: 'camera', component: CameraFunctionsComponent },
+  { path: 'cropper', component: CropperFunctionsComponent },
+  { path: 'ghoast', component: GhoastAdminComponent },
+  { path: '**', redirectTo: 'todo' }
 ];

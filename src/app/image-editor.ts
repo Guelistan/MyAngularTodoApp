@@ -46,10 +46,9 @@ export class ImageEditor {
       case 'file':
         image = this.imageToEdit || '';
         break;
-      case 'file':
-        image = this.imageToEdit || '';
-        image = this.imageToEdit || '';
 
+      case 'cropped':
+        image = this.croppedImage || '';
         break;
       default:
         console.error('Invalid image type');

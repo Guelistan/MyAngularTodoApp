@@ -22,10 +22,10 @@ interface Todo {
 
 /**
  * Die TodoComponent verwaltet die Anzeige und Bearbeitung von ToDos.
- * 
+ *
  * @component
  * @selector app-todo
- * 
+ *
  * @property {Todo[]} todos - Liste der aktuellen ToDos.
  * @property {string} todoInput - Eingabefeld für neuen ToDo-Text.
  * @property {string} todoDateInput - Eingabefeld für das Fälligkeitsdatum eines neuen ToDos.
@@ -47,7 +47,7 @@ interface Todo {
  * @property {ImageEditor} imageEditor - Instanz des Bildeditors.
  * @property {Todo[]} todosToShow - Gefilterte ToDos zur Anzeige.
  * @property {boolean} showImage - Steuert die Anzeige von Bildern in ToDos.
- * 
+ *
  * @method toggleCalendar - Öffnet oder schließt den Kalender.
  * @method toggleCropper - Öffnet oder schließt den Bild-Cropper.
  * @method toggleCamera - Öffnet oder schließt die Kamera-Komponente.
@@ -68,17 +68,25 @@ interface Todo {
  * @method toggleCollapse - Blendet die ToDo-Liste ein oder aus.
  * @method onImageChanged - Aktualisiert das aktuelle Bild.
  * @method cropImage - Schneidet das aktuelle Bild mit dem ImageEditor zu.
- * 
+ *
  * @constructor Lädt ToDos und Verlauf aus dem LocalStorage.
  * @ngOnInit Initialisiert die Anzeige der ToDo-Liste.
- */
-@Component({
+ */ @Component({
   selector: 'app-todo',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterOutlet, CropperFunctionsComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CameraFunctionsComponent,
+    CropperFunctionsComponent,
+    CalendarComponent,
+    RouterLink,
+    RouterOutlet
+  ],
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.css']
 })
+
 export class TodoComponent implements OnInit {
   @Input() todos: Todo[] = [];
   todoInput = '';
