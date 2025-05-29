@@ -61,9 +61,7 @@ export interface AdUser {
  * 7. Setzt das Feld 'telefon' als Alias für die Telefonnummer.
  * 8. Setzt das Foto des Kontakts.
  * 9. Setzt die Rolle des Kontakts.
- */
-export class contact {
-  [x: string]: any;
+ */ export class contact {
   identity: string;
   name: string;
   email: string;
@@ -73,6 +71,7 @@ export class contact {
   telefon: string;
   photo: string;
   role: string;
+
   constructor(
     subject: string,
     name: string,
@@ -83,23 +82,14 @@ export class contact {
     photo: string,
     role: string
   ) {
-    // 1. Weist die Identität (subject) dem Kontakt zu.
     this.identity = subject;
-    // 2. Setzt den Namen des Kontakts.
     this.name = name;
-    // 3. Setzt die E-Mail-Adresse des Kontakts.
     this.email = email;
-    // 4. Setzt die Telefonnummer des Kontakts.
     this.phone = phone;
-    // 5. Setzt die Adresse des Kontakts.
     this.address = address;
-    // 6. Setzt den Anzeigenamen des Kontakts.
     this.displayName = displayName;
-    // 7. Setzt das Feld 'telefon' als Alias für die Telefonnummer.
     this.telefon = phone;
-    // 8. Setzt das Foto des Kontakts.
     this.photo = photo;
-    // 9. Setzt die Rolle des Kontakts.
     this.role = role;
   }
 }
@@ -155,6 +145,18 @@ export class contactmodel {
     this.sector = sector;
   }
 }
+import { ContactService } from './contact.service';
+// Define newContact as a variable with the correct type annotation
+const newContact: contact = new contact(
+  '', // subject/identity
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  ''
+);
 
 @NgModule({
   imports: [CommonModule, AdminContactComponent],

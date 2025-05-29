@@ -5,3 +5,246 @@
   ],
   ...
 }
+
+
+<!--
+  admin-contact.component.html
+
+  Diese Komponente stellt das Admin-Kontakt-Dashboard dar.
+  Sie besteht aus folgenden Bereichen:
+
+  1. Aufgabenliste:
+     - Zeigt eine Tabelle aller Aufgaben (tasks) mit Titel, Fälligkeitsdatum und Status.
+     - Die Aufgaben werden dynamisch mit *ngFor aus einer tasks-Liste generiert.
+
+  2. Werkzeuge (rechte Seite):
+     - Kalender: Ein- und ausklappbar, zeigt eine Kalender-Komponente (<app-calendar>).
+     - Bildeditor: Ein- und ausklappbar, zeigt einen Bildeditor (<app-cropper-functions>), wenn ein Bild zum Bearbeiten vorhanden ist.
+     - Kamera: Ein- und ausklappbar, zeigt eine Kamera-Komponente (<app-camera-functions>) zur Aufnahme von Bildern.
+
+  3. Kontakte:
+     - Unten werden Kontaktkarten für alle Kontakte (contacts) angezeigt.
+     - Jede Karte zeigt Name und E-Mail-Adresse des Kontakts.
+
+  Erwartetes Verhalten:
+  - Die Buttons für Kalender, Bildeditor und Kamera steuern jeweils das Anzeigen/Ausblenden der zugehörigen Bereiche.
+  - Die Komponenten <app-calendar>, <app-cropper-functions> und <app-camera-functions> werden eingebunden und kommunizieren über Events mit der Hauptkomponente.
+  - Die Daten für Aufgaben und Kontakte werden über die Variablen tasks und contacts bereitgestellt.
+-->
+
+<!-- Dashboard-Hauptcontainer -->
+
+<div class="dashboard">
+  <!-- Aufgabenbereich -->
+  <div class="card">
+    <h2>📝 Aufgabenliste</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Aufgabe</th>
+          <th>Fällig</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of tasks">
+          <td>{{ task.title }}</td>
+          <td>{{ task.dueDate | date }}</td>
+          <td>{{ task.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Rechte Seite: Werkzeuge -->
+  <div class="card">
+    <!-- Kalender -->
+    <button class="collapsible" (click)="toggle('calendar')">📅 Kalender</button>
+    <div class="collapsible-content" [class.open]="showCalendar">
+      <app-calendar></app-calendar>
+    </div>
+
+    <!-- Bildeditor -->
+    <button class="collapsible" (click)="toggle('cropper')">✂️ Bild bearbeiten</button>
+    <div class="collapsible-content" [class.open]="showCropper">
+      <app-cropper-functions *ngIf="imageToEdit" [imageSrc]="imageToEdit" [shape]="cropShape"
+        (cropped)="onCropped($event)">
+      </app-cropper-functions>
+    </div>
+
+    <!-- Kamera -->
+    <button class="collapsible" (click)="toggle('camera')">📷 Kamera aufnehmen</button>
+    <div class="collapsible-content" [class.open]="showCamera">
+      <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
+    </div>
+  </div>
+</div>
+
+<!-- Kontakte unten -->
+<div class="contact-cards">
+  <div class="contact-card" *ngFor="let contact of contacts">
+    <h3>{{ contact.name }}</h3>
+    <p>{{ contact.email }}</p>
+  </div>
+</div>
+
+
+
+import { fileURLToPath } from 'node:url';
+
+import { CommonModule } from '@angular/common';
+import { AdminContactComponent } from './admin-contact.component';
+
+// Definiert das Interface für einen Kontakt mit verschiedenen Feldern
+export interface Contact {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  telephone: string;
+  address: string;
+  city: string;
+  zip: string;
+  country: string;
+  photo: File | string;
+  // Weitere Felder können bei Bedarf hinzugefügt werden
+}
+
+// Definiert das Interface für einen Benutzer aus Active Directory
+export interface AdUser {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  // Weitere Felder können bei Bedarf hinzugefügt werden
+}
+
+/**
+ * Repräsentiert eine Kontakt-Entität mit persönlichen und Kontaktinformationen.
+ *
+ * @property {string} identity - Die eindeutige Kennung des Kontakts (subject).
+ * @property {string} name - Der vollständige Name des Kontakts.
+ * @property {string} email - Die E-Mail-Adresse des Kontakts.
+ * @property {string} phone - Die Telefonnummer des Kontakts.
+ * @property {string} address - Die Adresse des Kontakts.
+ * @property {string} displayName - Der Anzeigename des Kontakts.
+ * @property {string} telefon - Alias für die Telefonnummer.
+ * @property {string} photo - URL oder Pfad zum Foto des Kontakts.
+ * @property {string} role - Die Rolle oder Position des Kontakts.
+ *
+ * @constructor
+ * Erstellt eine neue Kontaktinstanz.
+ * @param {string} subject - Die eindeutige Kennung des Kontakts.
+ * @param {string} name - Der vollständige Name des Kontakts.
+ * @param {string} email - Die E-Mail-Adresse des Kontakts.
+ * @param {string} phone - Die Telefonnummer des Kontakts.
+ * @param {string} address - Die Adresse des Kontakts.
+ * @param {string} displayName - Der Anzeigename des Kontakts.
+ * @param {string} photo - URL oder Pfad zum Foto des Kontakts.
+ * @param {string} role - Die Rolle oder Position des Kontakts.
+ *
+ * Schritte:
+ * 1. Weist die Identität (subject) dem Kontakt zu.
+ * 2. Setzt den Namen des Kontakts.
+ * 3. Setzt die E-Mail-Adresse des Kontakts.
+ * 4. Setzt die Telefonnummer des Kontakts.
+ * 5. Setzt die Adresse des Kontakts.
+ * 6. Setzt den Anzeigenamen des Kontakts.
+ * 7. Setzt das Feld 'telefon' als Alias für die Telefonnummer.
+ * 8. Setzt das Foto des Kontakts.
+ * 9. Setzt die Rolle des Kontakts.
+ */
+export class contact {
+  [x: string]: any;
+  identity: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  displayName: string;
+  telefon: string;
+  photo: string;
+  role: string;
+  constructor(
+    subject: string,
+    name: string,
+    email: string,
+    phone: string,
+    address: string,
+    displayName: string,
+    photo: string,
+    role: string
+  ) {
+    // 1. Weist die Identität (subject) dem Kontakt zu.
+    this.identity = subject;
+    // 2. Setzt den Namen des Kontakts.
+    this.name = name;
+    // 3. Setzt die E-Mail-Adresse des Kontakts.
+    this.email = email;
+    // 4. Setzt die Telefonnummer des Kontakts.
+    this.phone = phone;
+    // 5. Setzt die Adresse des Kontakts.
+    this.address = address;
+    // 6. Setzt den Anzeigenamen des Kontakts.
+    this.displayName = displayName;
+    // 7. Setzt das Feld 'telefon' als Alias für die Telefonnummer.
+    this.telefon = phone;
+    // 8. Setzt das Foto des Kontakts.
+    this.photo = photo;
+    // 9. Setzt die Rolle des Kontakts.
+    this.role = role;
+  }
+}
+
+// Klasse zur Verwaltung einer Kontaktliste
+export class contactList {
+  contacts: contact[];
+  constructor() {
+    // Initialisiert die Kontaktliste als leeres Array
+    this.contacts = [];
+  }
+  // Fügt einen Kontakt zur Liste hinzu
+  addContact(contact: contact) {
+    this.contacts.push(contact);
+  }
+  // Gibt alle Kontakte zurück
+  getContacts() {
+    return this.contacts;
+  }
+}
+
+// Interface für ein kombiniertes Modell mit mehreren Eigenschaften
+export interface combinmodel {
+  name: string;
+  value: string;
+  subject: string;
+  sector: string;
+  contact: string;
+}
+
+// Klasse für ein kombiniertes Modell
+export class combinemodel {
+  subject: string;
+  name: string;
+  sector: string;
+  constructor(subject: string, name: string, sector: string) {
+    this.subject = subject;
+    this.name = name;
+    this.sector = sector;
+  }
+}
+
+// Klasse für ein Kontaktmodell mit mehreren Eigenschaften
+export class contactmodel {
+  name: string;
+  value: string;
+  subject: string;
+  sector: string;
+  constructor(name: string, value: string, subject: string, sector: string) {
+    this.name = name;
+    this.value = value;
+    this.subject = subject;
+    this.sector = sector;
+  }
+}
+export class AdminContactModule { }

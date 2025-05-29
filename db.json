@@ -1,0 +1,161 @@
+{
+  "Contacts": [
+    {
+      "id": 1,
+      "name": "Max",
+      "surname": "Mustermann",
+      "email": "max@example.com",
+      "telephone": "0123456789",
+      "address": "Beispielstraße 1",
+      "city": "Berlin",
+      "zip": "10115",
+      "country": "Deutschland",
+      "photo": "data:image/png;base64,iVBORw0KGgoAAAANS..."
+    }
+  ],
+  "Tasks": [
+    {
+      "id": 1,
+      "title": "Task 1",
+      "description": "Description of Task 1",
+      "dueDate": "2023-10-01",
+      "status": "open",
+      "priority": "high"
+    }
+  ],
+  "Notes": [
+    {
+      "id": 1,
+      "title": "Note 1",
+      "content": "Content of Note 1",
+      "createdAt": "2023-09-01T12:00:00Z"
+    }
+  ],
+  "Events": [
+    {
+      "id": 1,
+      "title": "Event 1",
+      "description": "Description of Event 1",
+      "startDate": "2023-10-01T10:00:00Z",
+      "endDate": "2023-10-01T12:00:00Z",
+      "location": "Berlin"
+    }
+  ],
+  "addtodo": [
+    {
+      "id": 1,
+      "title": "addtodo 1",
+      "description": "Description of addtodo 1",
+      "createdAt": "2023-09-01T12:00:00Z",
+      "dueDate": "2023-10-01",
+      "status": "open",
+      "priority": "high"
+    }
+  ],
+  "Settings": {
+    "theme": "light",
+    "language": "en",
+    "notificationsEnabled": true,
+    "dateFormat": "YYYY-MM-DD"
+  },
+  "Users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2b$10$EIXo5z1",
+      "email": "admin@example.com",
+      "role": "admin"
+    }
+  ],
+  "Messages": [
+    {
+      "id": 1,
+      "senderId": 1,
+      "receiverId": 2,
+      "content": "Hello, this is a test message.",
+      "timestamp": "2023-10-01T10:00:00Z"
+    }
+  ],
+  "Files": [
+    {
+      "id": 1,
+      "name": "example.txt",
+      "size": 1024,
+      "type": "text/plain",
+      "url": "/files/example.txt"
+    }
+  ],
+  "Notifications": [
+    {
+      "id": 1,
+      "userId": 1,
+      "message": "You have a new notification.",
+      "timestamp": "2023-10-01T10:00:00Z",
+      "read": false
+    }
+  ],
+  "Logs": [
+    {
+      "id": 1,
+      "userId": 1,
+      "action": "User logged in",
+      "timestamp": "2023-10-01T10:00:00Z"
+    }
+  ],
+  "Permissions": [
+    {
+      "id": 1,
+      "userId": 1,
+      "resource": "contacts",
+      "action": "read"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "resource": "events",
+      "action": "write"
+    }
+  ],
+  "AuditLogs": [
+    {
+      "id": 1,
+      "userId": 1,
+      "action": "Created a new contact",
+      "timestamp": "2023-10-01T10:00:00Z"
+    }
+  ],
+  "Integrations": [
+    {
+      "id": 1,
+      "name": "Google Calendar",
+      "enabled": true,
+      "settings": {
+        "clientId": "your-client-id",
+        "clientSecret": "your-client-secret"
+      }
+    }
+  ],
+  "CustomFields": [
+    {
+      "id": 1,
+      "entityType": "contact",
+      "fieldName": "customField1",
+      "fieldType": "text"
+    }
+  ],
+  "Tags": [
+    {
+      "id": 1,
+      "name": "Important",
+      "color": "#FF0000"
+    }
+  ],
+  "Templates": [
+    {
+      "id": 1,
+      "name": "Email Template 1",
+      "subject": "Welcome to Our Service",
+      "body": "Hello {{name}},\n\nThank you for signing up for our service.\n\nBest regards,\nYour Team"
+    }
+  ]
+}

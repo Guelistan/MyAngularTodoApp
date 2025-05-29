@@ -6,21 +6,16 @@
 <!-- ToDo-Liste wird angezeigt, wenn showTodos true ist -->
 <div *ngIf="showTodos" class="todo-container">
   <!-- Iteration über alle ToDos -->
-  <div *ngFor="let todo of todos" class="todo-card">
+  <div *ngFor="let todo of todos; let i = index" class="todo-card" [attr.id]="'todo_' + sanitizeId(todo.text)">
     <!-- Platzhalter für das Bild des ToDos -->
     <div class="image-placeholder">
-      <!-- Bild wird angezeigt, wenn vorhanden -->
       <img *ngIf="todo.image" [src]="todo.image" alt="User Image">
     </div>
     <div class="todo-content">
-      <!-- Titel des ToDos -->
       <h3>{{ todo.titel }}</h3>
-      <!-- Beschreibung des ToDos -->
       <p>{{ todo.description }}</p>
-      <!-- Button zum Bearbeiten des Bildes -->
-      <button (click)="editImage(todo.id)">Bild bearbeiten</button>
-      <!-- Button zum Löschen des ToDos -->
-      <button (click)="removeTodo(todo.id)">Löschen</button>
+      <button (click)="editImage(i)">Bild bearbeiten</button>
+      <button (click)="removeTodo(i)">Löschen</button>
     </div>
   </div>
 </div>
@@ -30,35 +25,40 @@
   <h2>Neue Aufgabe hinzufügen</h2>
   <form (ngSubmit)="addTodo()">
     <label for="titel">Titel:</label>
-    <input type="text" id="titel" [(ngModel)]="newTodo.titel" name="titel" required>
+    <input type="text" id="titel" [(ngModel)]="todoInput" name="titel" required>
 
     <label for="description">Beschreibung:</label>
     <textarea id="description" [(ngModel)]="newTodo.description" name="description" required></textarea>
 
     <label for="image">Bild-URL:</label>
-    <input type="text" id="image" [(ngModel)]="newTodo.image" name="image">
+    <input type="text" id="image" [(ngModel)]="imageInput" name="image">
+
+    <label for="dueDate">Fälligkeitsdatum:</label>
+    <input type="date" id="dueDate" [(ngModel)]="todoDateInput" name="dueDate">
 
     <button type="submit">Aufgabe hinzufügen</button>
   </form>
 
-  <!-- Button zum Löschen aller ToDos -->
   <button (click)="todos = []">Alle Aufgaben löschen</button>
 </div>
 
-<!-- Platzhalter für weitere Routen-Komponenten -->
 <router-outlet></router-outlet>
 
 <!-- Bildbearbeitungsbereich mit Cropper -->
-<div class="cropper-wrapper">
-  <img #image src="imageUrl" alt="Bild zum Bearbeiten" class="editable-image" />
+<div class="cropper-wrapper" *ngIf="imageToEdit">
+  <img [src]="imageToEdit" alt="Bild zum Bearbeiten" class="editable-image" />
   <div class="controls">
-    <!-- Button zum Zuschneiden des Bildes -->
     <button (click)="cropImage()">Zentraler Ausschnitt</button>
   </div>
 </div>
 
-<!-- Komponente für zusätzliche Cropper-Funktionen -->
-<app-cropper-functions ...></app-cropper-functions>
+<app-cropper-functions *ngIf="showCropper" (cropped)="onCropped($event)"></app-cropper-functions>
 
-<!-- Link zur Admin-Kontaktseite -->
 <a routerLink="/admin-contact">Admin Kontakte</a>
+
+<button class="btn btn-sm btn-primary" (click)="showCamera = true">📷 Kamera starten</button>
+<app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
+
+<button (click)="toggleCalendar()" class="btn btn-sm btn-outline-primary">📅 Kalender anzeigen</button>
+<app-calendar *ngIf="showCalendar"></app-calendar>
+<button (click)="toggleCropper()" class="btn btn-sm btn-outline-secondary">✂️ Bild bearbeiten</button>

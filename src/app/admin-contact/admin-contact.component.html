@@ -78,3 +78,15 @@
     <p>{{ contact.email }}</p>
   </div>
 </div>
+<!-- Neues Kontaktformular -->
+<div class="card mt-4">
+  <h2>➕ Kontakt hinzufügen</h2>
+
+  <input type="text" [(ngModel)]="newContact.name" placeholder="Name" class="form-control" />
+  <input type="email" [(ngModel)]="newContact.email" placeholder="E-Mail" class="form-control" />
+
+  <input type="file" (change)="onImageSelected($event)" class="form-control" />
+  <img *ngIf="newContact.photo" [src]="newContact.photo" width="100" class="mt-2 rounded" />
+
+  <button (click)="saveNewContact()">💾 Speichern</button>
+</div>

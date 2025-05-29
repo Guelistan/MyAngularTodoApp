@@ -9,6 +9,11 @@
     "src/main.ts",
     "src/**/*.js",
     "src/main.server.ts",
+    "app/**/*.ts",
+    "app/**/*.js",
+    "app/**/*.d.ts",
+    "app/**/*.html",
+    "app/**/*.css",
   ],
   "exclude": [
     "src/test.ts",

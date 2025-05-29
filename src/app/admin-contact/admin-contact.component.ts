@@ -161,6 +161,7 @@ import { CommonModule } from '@angular/common';
 import { CalendarComponent } from '../calendar/calendar.component';
 import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-contact',
@@ -171,7 +172,7 @@ import { CameraFunctionsComponent } from '../camera-functions/camera-functions.c
     CommonModule,
     CalendarComponent,
     CropperFunctionsComponent,
-    CameraFunctionsComponent
+    CameraFunctionsComponent, FormsModule
   ]
 })
 export class AdminContactComponent {
@@ -200,6 +201,26 @@ export class AdminContactComponent {
     { name: 'Max Mustermann', email: 'max@example.com' },
     { name: 'Lisa Musterfrau', email: 'lisa@example.com' }
   ];
+
+  // Neues Kontaktobjekt für das Formular
+  newContact: { name?: string; email?: string; photo?: string } = {};
+
+  onImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.newContact.photo = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  saveNewContact(): void {
+    console.log('Neuer Kontakt:', this.newContact);
+    // Hier könntest du ihn z.B. per contactService.addContact() speichern
+    // this.contactService.addContact(this.newContact).subscribe(...)
+  }
 
   // Schaltet die Anzeige von Kalender, Cropper oder Kamera um
   toggle(section: 'calendar' | 'cropper' | 'camera') {
