@@ -1,66 +1,100 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
-  OnInit,
   Output,
-  ViewChild,
-  signal,
+  OnInit
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { routes } from '../app.routes';
-import { Router } from 'express';
-import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cropper-functions',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './cropper-functions.component.html',
-  styleUrls: ['./cropper-functions.component.css'],
+  styleUrls: ['./cropper-functions.component.css']
 })
 export class CropperFunctionsComponent implements OnInit {
   @Input() imageSrc!: string;
-  @Input() shape: string = 'square'; // or your preferred default
+  @Input() shape: string = 'square';
   @Output() cropped = new EventEmitter<string>();
 
-  @ViewChild('image', { static: true }) imageElement!: ElementRef<HTMLImageElement>;
+  ngOnInit() { }
 
-  ngOnInit() {
-    // Initialization logic if needed
-  }
-
-  emitCroppedImage(canvas: HTMLCanvasElement) {
-    const finalCanvas = this.applyMask(canvas);
-    const editedImage = finalCanvas.toDataURL('image/png');
-    this.cropped.emit(editedImage);
+  private loadImage(callback: (img: HTMLImageElement) => void) {
+    const img = new Image();
+    img.onload = () => callback(img);
+    img.src = this.imageSrc;
   }
 
   cropImage() {
-    const img = this.imageElement.nativeElement;
-    const canvas = document.createElement('canvas');
-    const size = Math.min(img.naturalWidth, img.naturalHeight);
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(
-        img,
-        (img.naturalWidth - size) / 2,
-        (img.naturalHeight - size) / 2,
-        size,
-        size,
-        0,
-        0,
-        size,
-        size
-      );
-    }
-    this.emitCroppedImage(canvas);
+    this.loadImage((img) => {
+      const canvas = document.createElement('canvas');
+      const size = Math.min(img.naturalWidth, img.naturalHeight);
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(
+          img,
+          (img.naturalWidth - size) / 2,
+          (img.naturalHeight - size) / 2,
+          size,
+          size,
+          0,
+          0,
+          size,
+          size
+        );
+        this.emitCroppedImage(canvas);
+      }
+    });
   }
 
-  applyMask(canvas: HTMLCanvasElement): HTMLCanvasElement {
+  applyGrayscale() {
+    this.loadImage((img) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          data[i] = data[i + 1] = data[i + 2] = avg;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        this.emitCroppedImage(canvas);
+      }
+    });
+  }
+
+  applyBrightness(factor: number) {
+    this.loadImage((img) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = Math.min(data[i] * factor, 255);
+          data[i + 1] = Math.min(data[i + 1] * factor, 255);
+          data[i + 2] = Math.min(data[i + 2] * factor, 255);
+        }
+        ctx.putImageData(imageData, 0, 0);
+        this.emitCroppedImage(canvas);
+      }
+    });
+  }
+
+  private applyMask(canvas: HTMLCanvasElement): HTMLCanvasElement {
     const ctx = canvas.getContext('2d');
     if (!ctx) return canvas;
 
@@ -103,43 +137,17 @@ export class CropperFunctionsComponent implements OnInit {
 
     return canvas;
   }
+  previewImage: string | null = null;
 
-  applyGrayscale() {
-    const img = this.imageElement.nativeElement;
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        data[i] = data[i + 1] = data[i + 2] = avg;
-      }
-      ctx.putImageData(imageData, 0, 0);
+  emitFinalImage() {
+    if (this.previewImage) {
+      this.cropped.emit(this.previewImage);
     }
-    this.emitCroppedImage(canvas);
   }
 
-  applyBrightness(factor: number) {
-    const img = this.imageElement.nativeElement;
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = Math.min(data[i] * factor, 255);
-        data[i + 1] = Math.min(data[i + 1] * factor, 255);
-        data[i + 2] = Math.min(data[i + 2] * factor, 255);
-      }
-      ctx.putImageData(imageData, 0, 0);
-    }
-    this.emitCroppedImage(canvas);
+  private emitCroppedImage(canvas: HTMLCanvasElement) {
+    const finalCanvas = this.applyMask(canvas);
+    this.previewImage = finalCanvas.toDataURL('image/png');
   }
+
 }

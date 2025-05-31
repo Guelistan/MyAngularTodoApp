@@ -7,13 +7,13 @@
 <div *ngIf="showTodos" class="todo-container">
   <!-- Iteration über alle ToDos -->
   <div *ngFor="let todo of todos; let i = index" class="todo-card" [attr.id]="'todo_' + sanitizeId(todo.text)">
-    <!-- Platzhalter für das Bild des ToDos -->
     <div class="image-placeholder">
       <img *ngIf="todo.image" [src]="todo.image" alt="User Image">
     </div>
     <div class="todo-content">
-      <h3>{{ todo.titel }}</h3>
+      <h3>{{ todo.titel || todo.text }}</h3>
       <p>{{ todo.description }}</p>
+      <p *ngIf="todo.dueDate">Fällig: {{ todo.dueDate | date:'shortDate' }}</p>
       <button (click)="editImage(i)">Bild bearbeiten</button>
       <button (click)="removeTodo(i)">Löschen</button>
     </div>
@@ -28,7 +28,7 @@
     <input type="text" id="titel" [(ngModel)]="todoInput" name="titel" required>
 
     <label for="description">Beschreibung:</label>
-    <textarea id="description" [(ngModel)]="newTodo.description" name="description" required></textarea>
+    <textarea id="description" [(ngModel)]="newTodo.description" name="description"></textarea>
 
     <label for="image">Bild-URL:</label>
     <input type="text" id="image" [(ngModel)]="imageInput" name="image">
@@ -38,27 +38,30 @@
 
     <button type="submit">Aufgabe hinzufügen</button>
   </form>
-
-  <button (click)="todos = []">Alle Aufgaben löschen</button>
+  <button (click)="todos = []; saveTodos()">Alle Aufgaben löschen</button>
 </div>
 
 <router-outlet></router-outlet>
 
 <!-- Bildbearbeitungsbereich mit Cropper -->
-<div class="cropper-wrapper" *ngIf="imageToEdit">
-  <img [src]="imageToEdit" alt="Bild zum Bearbeiten" class="editable-image" />
+<!-- Bildbearbeitungsbereich mit Cropper -->
+<div class="cropper-wrapper" *ngIf="showCropper && imageToEdit">
+  <app-cropper-functions [imageSrc]="imageToEdit" [shape]="cropShape" (cropped)="onCropped($event)">
+  </app-cropper-functions>
+
   <div class="controls">
-    <button (click)="cropImage()">Zentraler Ausschnitt</button>
+    <button (click)="cancelCrop()">Abbrechen</button>
   </div>
 </div>
 
-<app-cropper-functions *ngIf="showCropper" (cropped)="onCropped($event)"></app-cropper-functions>
+
 
 <a routerLink="/admin-contact">Admin Kontakte</a>
 
 <button class="btn btn-sm btn-primary" (click)="showCamera = true">📷 Kamera starten</button>
 <app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
 
-<button (click)="toggleCalendar()" class="btn btn-sm btn-outline-primary">📅 Kalender anzeigen</button>
+<button (click)="toggle('calendar')" class="btn btn-sm btn-outline-primary">📅 Kalender anzeigen</button>
 <app-calendar *ngIf="showCalendar"></app-calendar>
-<button (click)="toggleCropper()" class="btn btn-sm btn-outline-secondary">✂️ Bild bearbeiten</button>
+
+<button (click)="toggle('cropper')" class="btn btn-sm btn-outline-secondary">✂️ Bild bearbeiten</button>
