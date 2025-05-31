@@ -1,67 +1,106 @@
-<!-- Button zum Ein- und Ausklappen der ToDo-Liste -->
-<div>
-  <button (click)="toggleCollapse()">Toggle</button>
+<!-- Collapse Button -->
+<div class="mb-3">
+  <button (click)="toggleCollapse()" class="btn btn-secondary">
+    {{ showTodos ? 'Erledigte Aufgaben verstecken' : 'Erledigte Aufgaben anzeigen' }}
+  </button>
 </div>
 
-<!-- ToDo-Liste wird angezeigt, wenn showTodos true ist -->
-<div *ngIf="showTodos" class="todo-container">
-  <!-- Iteration über alle ToDos -->
-  <div *ngFor="let todo of todos; let i = index" class="todo-card" [attr.id]="'todo_' + sanitizeId(todo.text)">
-    <div class="image-placeholder">
-      <img *ngIf="todo.image" [src]="todo.image" alt="User Image">
+<!-- ToDo List -->
+<div *ngIf="showTodos" class="todo-list">
+  <div *ngFor="let todo of todos; let i = index" class="todo-card" [style.background]="todo.color || '#fff'"
+    [attr.id]="'todo_' + sanitizeId(todo.text)">
+    <div class="todo-image" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+      <img *ngIf="todo.image" [src]="todo.image" alt="Bild" />
+      <div *ngIf="!todo.image" class="image-placeholder">Bild hinzufügen (Drag & Drop)</div>
     </div>
-    <div class="todo-content">
+    <div class="todo-details">
       <h3>{{ todo.titel || todo.text }}</h3>
       <p>{{ todo.description }}</p>
       <p *ngIf="todo.dueDate">Fällig: {{ todo.dueDate | date:'shortDate' }}</p>
-      <button (click)="editImage(i)">Bild bearbeiten</button>
-      <button (click)="removeTodo(i)">Löschen</button>
+      <a *ngIf="todo.text?.startsWith('contact:')" [routerLink]="['/contact', todo.text.split(':')[1]]"
+        class="contact-link">
+        Kontaktkarte öffnen
+      </a>
+      <div class="todo-actions">
+        <button (click)="editImage(i)" class="btn btn-sm btn-outline-secondary">Bild bearbeiten</button>
+        <button (click)="removeTodo(i)" class="btn btn-sm btn-outline-danger">Löschen</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Formular zum Hinzufügen eines neuen ToDos -->
-<div class="todo-form">
+<!-- Add New ToDo Form -->
+<div class="todo-form card mt-4 p-3">
   <h2>Neue Aufgabe hinzufügen</h2>
-  <form (ngSubmit)="addTodo()">
-    <label for="titel">Titel:</label>
-    <input type="text" id="titel" [(ngModel)]="todoInput" name="titel" required>
-
-    <label for="description">Beschreibung:</label>
-    <textarea id="description" [(ngModel)]="newTodo.description" name="description"></textarea>
-
-    <label for="image">Bild-URL:</label>
-    <input type="text" id="image" [(ngModel)]="imageInput" name="image">
-
-    <label for="dueDate">Fälligkeitsdatum:</label>
-    <input type="date" id="dueDate" [(ngModel)]="todoDateInput" name="dueDate">
-
-    <button type="submit">Aufgabe hinzufügen</button>
+  <form (ngSubmit)="addTodo()" #todoForm="ngForm" autocomplete="off">
+    <div class="form-group">
+      <label for="titel">Titel:</label>
+      <input type="text" id="titel" [(ngModel)]="todoInput" name="titel" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Beschreibung:</label>
+      <textarea id="description" [(ngModel)]="newTodo.description" name="description" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="image">Bild-URL oder Drag & Drop:</label>
+      <input type="text" id="image" [(ngModel)]="imageInput" name="image" class="form-control"
+        (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+      <input type="file" accept="image/*" (change)="onFileSelected($event, -1)" class="form-control mt-1">
+    </div>
+    <div class="form-group">
+      <label for="dueDate">Fälligkeitsdatum:</label>
+      <input type="date" id="dueDate" [(ngModel)]="todoDateInput" name="dueDate" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="contact">ContactCard-Link (optional):</label>
+      <input type="text" id="contact" [(ngModel)]="newTodo.titel" name="contact" class="form-control"
+        placeholder="contact:contactId">
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Aufgabe hinzufügen</button>
+    <button type="button" class="btn btn-danger mt-2 ms-2" (click)="todos = []; saveTodos()">Alle Aufgaben
+      löschen</button>
   </form>
-  <button (click)="todos = []; saveTodos()">Alle Aufgaben löschen</button>
 </div>
 
-<router-outlet></router-outlet>
-
-<!-- Bildbearbeitungsbereich mit Cropper -->
-<!-- Bildbearbeitungsbereich mit Cropper -->
-<div class="cropper-wrapper" *ngIf="showCropper && imageToEdit">
+<!-- Cropper Modal -->
+<div class="cropper-modal" *ngIf="showCropper && imageToEdit">
   <app-cropper-functions [imageSrc]="imageToEdit" [shape]="cropShape" (cropped)="onCropped($event)">
   </app-cropper-functions>
-
-  <div class="controls">
-    <button (click)="cancelCrop()">Abbrechen</button>
+  <div class="cropper-controls mt-2">
+    <button (click)="cancelCrop()" class="btn btn-outline-secondary">Abbrechen</button>
   </div>
 </div>
 
+<!-- Camera Modal -->
+<div *ngIf="showCamera" class="camera-modal">
+  <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
+  <button (click)="showCamera = false" class="btn btn-outline-secondary mt-2">Kamera schließen</button>
+</div>
 
+<!-- Calendar Modal -->
+<div *ngIf="showCalendar" class="calendar-modal">
+  <app-calendar></app-calendar>
+  <button (click)="showCalendar = false" class="btn btn-outline-secondary mt-2">Kalender schließen</button>
+</div>
 
-<a routerLink="/admin-contact">Admin Kontakte</a>
+<!-- Action Buttons -->
+<div class="action-buttons mt-3">
+  <button (click)="toggle('cropper')" class="btn btn-outline-secondary me-2">✂️ Bild bearbeiten</button>
+  <button (click)="toggle('camera')" class="btn btn-outline-primary me-2">📷 Kamera</button>
+  <button (click)="toggle('calendar')" class="btn btn-outline-primary">📅 Kalender</button>
+</div>
 
-<button class="btn btn-sm btn-primary" (click)="showCamera = true">📷 Kamera starten</button>
-<app-camera-functions *ngIf="showCamera" (captured)="onCameraImage($event)"></app-camera-functions>
+<!-- Verlauf (History) -->
+<div class="history mt-4">
+  <h4>Verlauf</h4>
+  <button (click)="clearHistory()" class="btn btn-sm btn-outline-danger mb-2">Verlauf löschen</button>
+  <ul class="list-group">
+    <li *ngFor="let item of history" class="list-group-item">{{ item }}</li>
+  </ul>
+</div>
 
-<button (click)="toggle('calendar')" class="btn btn-sm btn-outline-primary">📅 Kalender anzeigen</button>
-<app-calendar *ngIf="showCalendar"></app-calendar>
-
-<button (click)="toggle('cropper')" class="btn btn-sm btn-outline-secondary">✂️ Bild bearbeiten</button>
+<!-- Admin Contact Link -->
+<div class="mt-4">
+  <a routerLink="/admin-contact" class="btn btn-link">Admin Kontakte</a>
+</div>
+<router-outlet></router-outlet>
