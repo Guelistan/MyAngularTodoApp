@@ -1,72 +1,276 @@
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* Grundlayout und Hintergrund */
+body,
+.app-root {
+  background: #0b025f42;
+  color: #0d38f7;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-.main-layout {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: stretch;
-  min-height: 80vh;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-/* Bereiche: Kamera (links), Todos (mitte), Kalender (rechts) */
-.camera {
-  flex: 1 1 20%;
-}
-
-.todos {
-  flex: 2 1 60%;
-}
-
-.calendar {
-  flex: 1 1 20%;
-}
-
-/* Responsive Anpassung für kleine Geräte */
-@media (max-width: 768px) {
-  .main-layout {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .camera,
-  .todos,
-  .calendar {
-    flex: unset;
-    width: 100%;
-  }
-}
-.primary-button {
-  background-color: #0078d4;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.primary-button:hover {
-  background-color: #005fa3;
-}
-
-.input-field {
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 100%;
-  max-width: 300px;
+/* ToDo Cards Grid */
+.todo-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .todo-card {
-  background: #fff;
+  background: #ce0909;
   border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(255, 255, 0, 0.08);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s;
+}
+
+.todo-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 4px 24px rgba(2, 89, 116, 0.74);
+}
+
+/* Drag & Drop Box */
+.image-placeholder,
+.drag-drop-box {
+  background: #061ea8da;
+  border: 2px dashed #00eeff;
+  border-radius: 8px;
+  color: #ff00f2;
+  text-align: center;
+  padding: 1.2rem;
+  margin: 0.5rem 0;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.drag-drop-box.dragover,
+.image-placeholder.dragover {
+  background: #333300;
+  border-color: #fff70088;
+  color: #ffffff;
+}
+
+/* Bildbereich */
+.todo-image {
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.todo-image img {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 174, 255, 0.1);
+}
+
+/* Details */
+.todo-details h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  color: #080000;
+  text-shadow: white 1px 2px;
+}
+
+.todo-details p {
+  margin: 0 0 0.3rem 0;
+  color: black;
+  text-shadow: white 1px 2px;
+}
+
+.todo-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Buttons mit gelbem Schatten */
+.btn,
+button,
+a.btn {
+  box-shadow: 0 2px 8px rgba(255, 255, 0, 0.18);
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.btn:hover,
+button:hover,
+a.btn:hover {
+  box-shadow: 0 4px 16px rgba(255, 255, 0, 0.35);
+  background: #ffd600;
+  color: #181818 !important;
+}
+
+/* Action Buttons (Cropper, Kamera, Kalender) */
+.action-buttons .btn {
+  margin-right: 0.5rem;
+  background: #232323;
+  color: #ffd600;
+  border: 1px solid #ffd600;
+}
+
+.action-buttons .btn:last-child {
+  margin-right: 0;
+}
+
+.action-buttons .btn:hover {
+  background: #ffd600;
+  color: #181818;
+  border-color: #fff700;
+}
+
+/* Verlauf */
+.history {
+  background: #232323;
+  border-radius: 10px;
   padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+  box-shadow: 0 2px 8px rgba(255, 255, 0, 0.08);
+}
+
+.history h4 {
+  color: #ffd600;
+}
+
+.list-group-item {
+  background: #292929;
+  color: #fff;
+  border: none;
+}
+
+/* Admin Contact Card */
+.contact-card,
+.admin-contact-card {
+  background: #232323;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(255, 255, 0, 0.08);
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 220px;
+  max-width: 320px;
+}
+
+.contact-card img,
+.admin-contact-card img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(255, 255, 0, 0.10);
+}
+
+.contact-card .edit-image-btn,
+.admin-contact-card .edit-image-btn {
+  margin-top: 0.5rem;
+  background: #232323;
+  color: #ffd600;
+  border: 1px solid #ffd600;
+  box-shadow: 0 2px 8px rgba(255, 255, 0, 0.18);
+}
+
+.contact-card .edit-image-btn:hover,
+.admin-contact-card .edit-image-btn:hover {
+  background: #ffd600;
+  color: #181818;
+  border-color: #fff700;
+}
+
+/* Kontaktinformationen */
+.contact-card p,
+.admin-contact-card p {
+  margin: 0.2rem 0;
+  color: #fff;
+  text-align: center;
+}
+
+/* Kontaktkarten-Container */
+.contact-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+/* Modal-Overlays */
+.cropper-modal,
+.camera-modal,
+.calendar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 24, 24, 0.95);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cropper-controls,
+.camera-controls,
+.calendar-controls {
+  margin-top: 1rem;
+}
+
+/* Formular */
+.todo-form,
+.card {
+  background: #232323;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(255, 255, 0, 0.08);
+  padding: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.form-control {
+  background: #292929;
+  color: #fff;
+  border: 1px solid #ffd600;
+  margin-bottom: 0.7rem;
+}
+
+.form-control:focus {
+  background: #232323;
+  color: #ffd600;
+  border-color: #fff700;
+  outline: none;
+}
+
+/* Responsive Anpassung */
+@media (max-width: 1100px) {
+  .todo-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .todo-list {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-cards-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Sonstiges */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #232323;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ffd600;
+  border-radius: 4px;
 }

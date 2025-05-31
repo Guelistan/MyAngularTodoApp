@@ -18,12 +18,14 @@
         {{ showCamera() ? 'Kamera schließen' : 'Kamera öffnen' }}
       </button>
     </section>
-
-    <!-- Kamera Steuerung -->
+    <!-- Kamera Steuerung als Listen-Auswahl -->
     <div class="camera-controls">
-      <button type="button" (click)="openCamera()">Kamera starten</button>
-      <button type="button" (click)="takePicture()">Foto aufnehmen</button>
-      <button type="button" (click)="stopCamera()">Kamera stoppen</button>
+      <label for="cameraActionSelect">Kamera-Aktion auswählen:</label>
+      <select id="cameraActionSelect" [(ngModel)]="selectedCameraAction">
+        <option [ngValue]="null" disabled selected>Aktion wählen...</option>
+        <option *ngFor="let action of cameraActions" [ngValue]="action">{{ action.label }}</option>
+      </select>
+      <button type="button" (click)="onCameraActionSelect()">Camera Controls</button>
     </div>
 
     <!-- Aufgenommenes Bild anzeigen -->

@@ -24,6 +24,7 @@
       <div class="todo-actions">
         <button (click)="editImage(i)" class="btn btn-sm btn-outline-secondary">Bild bearbeiten</button>
         <button (click)="removeTodo(i)" class="btn btn-sm btn-outline-danger">Löschen</button>
+        <button (click)="saveImage(i)" class="btn btn-sm btn-outline-success">Bild Speichern</button>
       </div>
     </div>
   </div>
@@ -85,7 +86,7 @@
 
 <!-- Action Buttons -->
 <div class="action-buttons mt-3">
-  <button (click)="toggle('cropper')" class="btn btn-outline-secondary me-2">✂️ Bild bearbeiten</button>
+  <button (click)="toggle('cropper')" class="btn btn-outline-primary me-2">✂️ Bild bearbeiten</button>
   <button (click)="toggle('camera')" class="btn btn-outline-primary me-2">📷 Kamera</button>
   <button (click)="toggle('calendar')" class="btn btn-outline-primary">📅 Kalender</button>
 </div>

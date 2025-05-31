@@ -19,30 +19,55 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./camera-functions.component.css']
 })
 export class CameraFunctionsComponent {
-  // Referenz auf das Video-Element im Template
+  // Referenz auf das Video-Element für die Kamera-Vorschau
   @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
   // EventEmitter für das aufgenommene Bild
   @Output() captured = new EventEmitter<string>();
 
-  // Stream-Objekt für die Kamera
+  // Aktueller Kamera-Stream
   stream: MediaStream | null = null;
-  // Das aktuell aufgenommene Bild
+  // Das aufgenommene Bild (Base64)
   capturedImage: string | null = null;
-  // Bild, das zum Bearbeiten (z.B. Croppen) ausgewählt wurde
+  // Bild, das bearbeitet werden soll
   imageToEdit: string | null = null;
-  // Das Ergebnis nach dem Croppen
+  // Das zugeschnittene Bild
   croppedImage: string | null = null;
 
-  // Signal, ob die Kamera angezeigt werden soll
+  // Zeigt an, ob die Kamera angezeigt wird
   showCamera = signal(false);
-  // Status, ob das Kamera-Panel geöffnet ist
+  // Status des Kamera-Panels (offen/geschlossen)
   cameraPanelOpen = false;
-  // Signal für die gewählte Crop-Form
+  // Form für den Zuschnitt (Crop)
   cropShape = signal<'circle' | 'oval' | 'square'>('square');
+
+  // Ausgewählte Kamera-Aktion
+  selectedCameraAction: any = null;
+  // Liste der verfügbaren Kamera-Aktionen
+  cameraActions = [
+    { label: 'Kamera öffnen', value: 'openCamera' },
+    { label: 'Bild herunterladen', value: 'downloadImage' },
+    { label: 'Bild bearbeiten', value: 'editImage' },
+    { label: 'Bild zuschneiden', value: 'cropImage' },
+    { label: 'Bild auswählen', value: 'selectImage' },
+    { label: 'Bild löschen', value: 'cancelImage' },
+    { label: 'Kamera starten', value: 'startCamera' },
+    { label: 'Kamera schließen', value: 'closeCamera' },
+    { label: 'Bild hochladen', value: 'uploadImage' },
+    { label: 'Bild speichern', value: 'saveImage' },
+    { label: 'Bild aufnehmen', value: 'takePicture' },
+    { label: 'Kamera stoppen', value: 'stopCamera' },
+    { label: 'Kamera zurücksetzen', value: 'resetCamera' }
+  ];
+
 
   constructor(private sanitizer: DomSanitizer) { }
 
-  // Öffnet die Kamera und zeigt den Stream im Video-Element an
+  // Öffnet oder schließt das Kamera-Panel
+  toggleCameraPanel() {
+    this.cameraPanelOpen = !this.cameraPanelOpen;
+  }
+
+  // Startet die Kamera und zeigt den Stream an
   async openCamera(): Promise<void> {
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -51,12 +76,13 @@ export class CameraFunctionsComponent {
         video.srcObject = this.stream;
         video.play();
       }
+      this.showCamera.set(true);
     } catch (err) {
       console.error('Kamera konnte nicht gestartet werden:', err);
     }
   }
 
-  // Nimmt ein Bild vom aktuellen Videoframe auf
+  // Nimmt ein Bild von der Kamera auf
   takePicture(): void {
     if (!this.videoElement) return;
     const video = this.videoElement.nativeElement;
@@ -69,18 +95,20 @@ export class CameraFunctionsComponent {
       const image = canvas.toDataURL('image/png');
       this.capturedImage = image;
       this.captured.emit(image);
+      this.imageToEdit = image;
     }
   }
 
-  // Stoppt die Kamera und gibt die Ressourcen frei
+  // Stoppt die Kamera und beendet den Stream
   stopCamera(): void {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
+    this.showCamera.set(false);
   }
 
-  // Lädt das aktuell aufgenommene Bild herunter
+  // Lädt das aufgenommene Bild herunter
   downloadImage(): void {
     if (!this.capturedImage) return;
     const link = document.createElement('a');
@@ -89,29 +117,111 @@ export class CameraFunctionsComponent {
     link.click();
   }
 
-  // Wird aufgerufen, wenn ein Bild vom Nutzer ausgewählt wird (z.B. zum Croppen)
+  // Wird aufgerufen, wenn ein Bild ausgewählt wird (Dateiupload)
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const reader = new FileReader();
       reader.onload = () => {
         this.imageToEdit = reader.result as string;
+        this.capturedImage = this.imageToEdit;
       };
       reader.readAsDataURL(input.files[0]);
     }
   }
 
-  // Wird aufgerufen, wenn das Bild erfolgreich gecroppt wurde
+  // Wird aufgerufen, wenn das Bild zugeschnitten wurde
   onCropped(result: string): void {
     this.croppedImage = result;
-    this.capturedImage = result; // Optional: Das gecroppte Bild als aktuelles Bild setzen
+    this.capturedImage = result;
   }
 
-  // Setzt die gewünschte Crop-Form (z.B. Kreis, Oval, Quadrat)
+  // Setzt die Form für den Zuschnitt
   setCropShape(shape: 'oval' | 'circle' | 'square') {
     this.cropShape.set(shape);
-    console.log('Gewählte Bildform:', shape);
   }
+
+  // Löscht das aufgenommene und bearbeitete Bild
+  clearCapturedImage() {
+    this.capturedImage = null;
+    this.imageToEdit = null;
+    this.croppedImage = null;
+  }
+
+  // Setzt die Kamera zurück (Bild löschen, Kamera stoppen und neu starten)
+  resetCamera() {
+    this.clearCapturedImage();
+    this.stopCamera();
+    this.openCamera();
+  }
+
+  // Bricht die Bildauswahl/-aufnahme ab
+  cancelImage() {
+    this.clearCapturedImage();
+  }
+
+  // Speichert das aktuelle Bild (lädt es herunter)
+  saveImage() {
+    this.downloadImage();
+  }
+
+  // Setzt das Bild zum Bearbeiten
+  editImage() {
+    if (this.capturedImage) {
+      this.imageToEdit = this.capturedImage;
+    }
+  }
+
+  // Führt die ausgewählte Kamera-Aktion aus
+  onCameraActionSelect() {
+    if (!this.selectedCameraAction) return;
+    switch (this.selectedCameraAction.value) {
+      case 'openCamera':
+        this.openCamera();
+        break;
+      case 'downloadImage':
+        this.downloadImage();
+        break;
+      case 'editImage':
+        this.editImage();
+        break;
+      case 'cropImage':
+        // Hier ggf. Cropper anzeigen/aktivieren
+        break;
+      case 'selectImage':
+        // Öffne Dateiauswahl (simuliere Klick auf verstecktes Input-Element)
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) (fileInput as HTMLInputElement).click();
+        break;
+      case 'cancelImage':
+        this.cancelImage();
+        break;
+      case 'startCamera':
+        this.openCamera();
+        break;
+      case 'closeCamera':
+        this.stopCamera();
+        break;
+      case 'uploadImage':
+        // Upload-Logik hier einfügen
+        break;
+      case 'saveImage':
+        this.saveImage();
+        break;
+      case 'takePicture':
+        this.takePicture();
+        break;
+      case 'stopCamera':
+        this.stopCamera();
+        break;
+      case 'resetCamera':
+        this.resetCamera();
+        break;
+      default:
+        break;
+    }
+  }
+  // Optionen für den Cropper (Zuschnitt)
   cropperOptions = {
     aspectRatio: 16 / 9,
     viewMode: 1,
@@ -128,5 +238,4 @@ export class CameraFunctionsComponent {
     modal: true,
     highlight: true
   };
-
 }

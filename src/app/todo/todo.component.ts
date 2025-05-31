@@ -36,6 +36,9 @@ interface Todo {
   styleUrls: ['./todo.component.css']
 })
 export class TodoComponent implements OnInit {
+saveImage(_t9: number) {
+throw new Error('Method not implemented.');
+}
   @Input() todos: Todo[] = [];
   @Input() showImage: boolean = false;
 
@@ -221,7 +224,7 @@ export class TodoComponent implements OnInit {
   }
 
   editImageFromCropped() {
-    this.showCamera = false;
+    this.showCamera = true;
     this.showCropper = true;
     this.imageToEdit = this.croppedImage || null;
   }

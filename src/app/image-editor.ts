@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ImageConfig } from '@angular/common';
 
 export class ImageEditor {
   imageToEdit: string | null = null;
@@ -38,22 +37,28 @@ export class ImageEditor {
   editImage(image: string) {
     this.imageToEdit = image;
   }
-  cropImage(image: string): void {
-    switch (image) {
-      case 'camera':
-        image = this.imageToEdit || '';
-        break;
-      case 'file':
-        image = this.imageToEdit || '';
-        break;
 
+  cropImage(type: string): void {
+    let image: string = '';
+    switch (type) {
+      case 'camera':
+      case 'file':
+      case 'drag and drop':
+      case 'url':
+      case 'image':
+      case 'imageUrl':
+      case 'imageData':
+        image = this.imageToEdit || '';
+        break;
       case 'cropped':
+      case 'imagesave':
         image = this.croppedImage || '';
         break;
       default:
         console.error('Invalid image type');
-        break;
+        return;
     }
     console.log('cropImage called with', image);
+    // Hier kann die eigentliche Crop-Logik implementiert werden
   }
 }
