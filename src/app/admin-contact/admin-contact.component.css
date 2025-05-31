@@ -1,113 +1,17 @@
-/* admin-contact.component.css */
+ /* Karten-Stil für einzelne Dashboard-Elemente */
+ .card {
+   background: #fff;
+   border-radius: 8px;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+   padding: 1.5rem;
+   flex: 1 1 0;
+   min-width: 300px;
 
-/* Dashboard Layout */
-/* Das Dashboard wird als flexibles Layout mit Abstand zwischen den Elementen dargestellt. */
-.dashboard {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-/* Karten-Stil für einzelne Dashboard-Elemente */
-.card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: 1.5rem;
-  flex: 1 1 0;
-  min-width: 300px;
-}
-
-/* Aufgabenliste Tabelle */
-/* Tabelle nimmt die volle Breite ein und hat keinen Abstand zwischen den Zellen. */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-/* Tabellenkopf und Zellen erhalten Abstand und eine untere Linie. */
-th,
-td {
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid #eee;
-  text-align: left;
-}
-
-/* Tabellenkopf hat einen hellgrauen Hintergrund. */
-th {
-  background: #f5f5f5;
-}
-
-/* Collapsible Buttons */
-/* Stil für aufklappbare Schaltflächen (z.B. für Akkordeons). */
-.collapsible {
-  width: 100%;
-  background: #f0f0f0;
-  color: #333;
-  cursor: pointer;
-  padding: 0.75rem 1rem;
-  border: none;
-  outline: none;
-  text-align: left;
-  font-size: 1rem;
-  margin-top: 1rem;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-/* Hover-Effekt für Collapsible Buttons */
-.collapsible:hover {
-  background: #e0e0e0;
-}
-
-/* Collapsible Content */
-/* Der Inhalt ist standardmäßig versteckt (max-height: 0), wird animiert ein-/ausgeblendet. */
-.collapsible-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: #fafafa;
-  border-radius: 0 0 4px 4px;
-  margin-bottom: 1rem;
-  padding: 0 1rem;
-}
-
-/* Wenn geöffnet, wird der Inhalt sichtbar und erhält mehr Padding. */
-.collapsible-content.open {
-  max-height: 500px; /* Anpassen je nach Inhalt */
-  padding: 1rem;
-  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s;
-}
-
-/* Kontaktkarten */
-/* Kontaktkarten werden nebeneinander und umgebrochen dargestellt. */
-.contact-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-/* Einzelne Kontaktkarte mit Schatten und Abstand. */
-.contact-card {
-  background: #f9f9f9;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  padding: 1rem 1.5rem;
-  min-width: 180px;
-  flex: 0 1 220px;
-}
-
-/* Überschrift in der Kontaktkarte */
-.contact-card h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-}
-
-/* Text in der Kontaktkarte */
-.contact-card p {
-  margin: 0;
-  color: #666;
-  font-size: 0.95rem;
-}
+   /* Neue Eigenschaften */
+   border: 2px solid #4a90e2;
+   /* Blaue Umrandung */
+   max-height: 400px;
+   /* Maximale Höhe */
+   overflow-y: auto;
+   /* Scrollbar bei Überlauf */
+ }

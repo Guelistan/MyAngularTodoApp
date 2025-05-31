@@ -8,24 +8,26 @@
   @if (cameraPanelOpen) {
   <section>
     <!-- Kamera-Video -->
-    <video #videoElement width="320" height="240" autoplay></video>
+    <video #videoElement width="320" height="240" autoplay *ngIf="showCamera()"></video>
 
     <!-- Bild auswählen oder aufnehmen -->
     <section class="add-image">
       <h3>Bild auswählen oder aufnehmen</h3>
-      <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+      <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" hidden />
+      <button type="button" (click)="selectImage()">Bild auswählen</button>
       <button type="button" (click)="showCamera.set(!showCamera())">
         {{ showCamera() ? 'Kamera schließen' : 'Kamera öffnen' }}
       </button>
     </section>
-    <!-- Kamera Steuerung als Listen-Auswahl -->
+
+    <!-- Kamera Steuerung -->
     <div class="camera-controls">
       <label for="cameraActionSelect">Kamera-Aktion auswählen:</label>
       <select id="cameraActionSelect" [(ngModel)]="selectedCameraAction">
         <option [ngValue]="null" disabled selected>Aktion wählen...</option>
         <option *ngFor="let action of cameraActions" [ngValue]="action">{{ action.label }}</option>
       </select>
-      <button type="button" (click)="onCameraActionSelect()">Camera Controls</button>
+      <button type="button" (click)="onCameraActionSelect()">Ausführen</button>
     </div>
 
     <!-- Aufgenommenes Bild anzeigen -->
@@ -38,13 +40,12 @@
   </section>
   }
 
-  <!-- Bildbearbeitung -->
-  @if (imageToEdit) {
+  <!-- Bildbearbeitung mit Cropper -->
+  @if (showCropper() && imageToEdit) {
   <section class="image-editing">
     <h3>🛠️ Bild bearbeiten</h3>
 
-    <!-- Cropper-Komponente mit Form-Input -->
-    <app-cropper-functions imagesrc="imageToEdit" [shape]="cropShape()" (cropped)="onCropped($event)">
+    <app-cropper-functions [imageSrc]="imageToEdit" [shape]="cropShape()" (cropped)="onCropped($event)">
     </app-cropper-functions>
 
     <!-- Formauswahl -->
@@ -75,5 +76,3 @@
   </div>
   }
 </div>
-<app-cropper-functions imageSrc="imageToEdit ?? ''" [shape]="cropShape()" (cropped)="onCropped($event)">
-</app-cropper-functions>
