@@ -25,3 +25,32 @@
     <button (click)="emitFinalImage()">✅ Speichern</button>
   </div>
 </div>
+
+
+<div class="cropper-functions">
+  <div class="image-container">
+    <img #image [src]="imageSrc" alt="Zu bearbeitendes Bild" style="max-width: 100%; max-height: 300px;" />
+  </div>
+
+  <div class="controls">
+    <button (click)="cropImage()">Zuschneiden ({{ shape }})</button>
+    <button (click)="applyGrayscale()">Graustufen</button>
+    <button (click)="applyBrightness(1.2)">Heller</button>
+    <button (click)="applyBrightness(0.8)">Dunkler</button>
+
+    <label>
+      Form:
+      <select [(ngModel)]="shape">
+        <option value="square">Quadrat</option>
+        <option value="circle">Kreis</option>
+        <option value="oval">Oval</option>
+      </select>
+    </label>
+  </div>
+
+  <div *ngIf="previewImage" class="preview">
+    <h4>Vorschau:</h4>
+    <img [src]="previewImage" alt="Bearbeitetes Bild" style="max-width: 100%; border: 1px solid #ccc;" />
+    <button (click)="emitFinalImage()">✅ Speichern</button>
+  </div>
+</div>
