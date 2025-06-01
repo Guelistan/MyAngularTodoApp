@@ -1,17 +1,106 @@
- /* Karten-Stil für einzelne Dashboard-Elemente */
- .card {
-   background: #fff;
-   border-radius: 8px;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-   padding: 1.5rem;
-   flex: 1 1 0;
-   min-width: 300px;
+/* Card Styles */
+.card {
+  background: rgba(245, 245, 245, 0.652);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(199, 199, 4, 0.792);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(199, 199, 4, 0.792);
+}
 
-   /* Neue Eigenschaften */
-   border: 2px solid #4a90e2;
-   /* Blaue Umrandung */
-   max-height: 400px;
-   /* Maximale Höhe */
-   overflow-y: auto;
-   /* Scrollbar bei Überlauf */
- }
+/* Contact Styles */
+.contact {
+  background: #061ea8da;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #ff00f2;
+  box-shadow: 0 2px 8px rgba(9, 173, 80, 0.66);
+}
+
+.contact-card-form {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.contact-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 12px;
+  display: flex;
+  gap: 1rem;
+  background: #f9f9f9;
+  max-width: 300px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.drop-zone {
+  border: 2px dashed #ccc;
+  padding: 1rem;
+  text-align: center;
+}
+
+.card-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.card-item {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.btn-back {
+  background: #eee;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.drop-zone {
+  border: 2px dashed #aaa;
+  padding: 1rem;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.drop-zone:hover {
+  background: #f0f0f0;
+}
+
+.drop-hint {
+  font-size: 0.9rem;
+  color: #888;
+}
+.card-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}

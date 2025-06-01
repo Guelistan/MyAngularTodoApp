@@ -1,245 +1,220 @@
-/* import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { from, Observable } from 'rxjs';
-// Make sure the file exists at the specified path, or update the import path if the service is located elsewhere.
-import { ContactService } from './contact.service';
-// If the file does not exist, create it with a basic Angular service structure:
-import { AdUser, contact } from './contact.model'; // Ensure this path is correct
-import { CommonOptions } from 'child_process';
-import { CommonModule } from '@angular/common';
-// Ensure this path is correct
-import { HttpClient } from '@angular/common/http';
-import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
-import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
-import { stringify } from 'querystring';
-import { CalendarComponent } from '../calendar/calendar.component';
-@Component({
-  selector: 'app-admin-contact',
-  templateUrl: './admin-contact.component.html',
-  styleUrls: ['./admin-contact.component.css'],
-  standalone: true,
-  imports: [
-    CameraFunctionsComponent,
-    CropperFunctionsComponent,CalendarComponent
-  ]
-})
-export class AdminContactComponent implements OnInit {
-  @ViewChild('imageInput', { static: false }) imageInput!: ElementRef<HTMLInputElement>;
-  contacts: contact[] = [];
-  chosenContact?: contact;
-  searchResult$!: Observable<AdUser[]>;
-  searchName = '';
-  searchSurname = '';
-  searchEmail = '';
-  searchPhone = '';
-  searchValide = false;
-  searchDirty = false;
-  internationalsearch = false;
-  search = '';
-  roles: string[] = [];
-  keineRolle = false;
-  abteilung = '';
-  imageToEdit: string | null = null;
-  croppedImage: string | null = null;
-
-  constructor(private contactService: ContactService) { }
-
-  ngOnInit(): void {
-    // Kontakte laden
-    this.loadContacts();
-  }
-
-  loadContacts(): void {
-    this.contactService.getContacts().subscribe(contacts => this.contacts = contacts);
-  }
-  addContact(adUser: import('./contact.model').AdUser): void {
-    interface AddContactResponse {
-      // Define properties based on the expected response structure
-      // For example:
-      success: boolean;
-      message?: string;
-      contact?: contact;
-      [key: string]: any;
-    }
-
-    interface AddContactError {
-      // Define properties based on the expected error structure
-      // For example:
-      error: any;
-      message?: string;
-      [key: string]: any;
-    }
-
-    this.contactService.addContact(adUser).subscribe({
-      next: (response: AddContactResponse) => {
-        console.log('Contact added successfully:', response);
-        this.loadContacts();
-      },
-      error: (err: AddContactError) => {
-        console.error('Error adding contact:', err);
-      }
-    });
-  }
-
-  async updateContactPhoto(contact: contact): Promise<void> {
-    const file = this.imageInput.nativeElement.files?.[0];
-    if (!file) return;
-
-    const toBase64 = (file: File): Promise<string> =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-      });
-
-    const photoBase64 = await toBase64(file);
-    const updatedContact = { ...contact, photo: photoBase64 };
-    this.contactService.updateContact(updatedContact).subscribe((response: any) => {
-      console.log('Contact updated successfully:', response);
-      this.loadContacts();
-    });
-  }
-
-  onPhotoCaptured(photoFile: File, contact: contact) {
-    // Convert File to base64 string
-    const toBase64 = (file: File): Promise<string> =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-      });
-
-    toBase64(photoFile).then(photoBase64 => {
-      const updatedContact = { ...contact, photo: photoBase64 };
-      this.contactService.updateContact(updatedContact).subscribe(() => this.loadContacts());
-    });
-  }
-
-  onPhotoSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      // handle file
-    }
-  }
-
-  onCameraImage(imageData: string) {
-    this.imageToEdit = imageData;
-  }
-
-  onCropped(cropped: string) {
-    this.croppedImage = cropped;
-    if (this.chosenContact) {
-      this.chosenContact.photo = cropped;
-      // Optional: this.updateContactPhoto(this.chosenContact);
-    }
-    this.imageToEdit = null;
-  }
-
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-  }
-
-  onDrop(event: DragEvent, contact: any) {
-    event.preventDefault();
-    const file = event.dataTransfer?.files[0];
-    if (file && file.type.startsWith('image/')) {
-      // handle the file (e.g., call onPhotoSelected or similar logic)
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        contact.photo = e.target?.result as string; // nicht splitten!
-        this.contactService.updateContact(contact).subscribe(() => this.loadContacts());
-      }
-      reader.readAsDataURL(file);
-    }
-  }
- }
- */
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CalendarComponent } from '../calendar/calendar.component';
-import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
-import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
 import { FormsModule } from '@angular/forms';
 
+import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
+import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
+
+interface Contact {
+    id: number;
+    name: string;
+    email: string;
+    photo?: string;
+    phone?: string;
+    address?: string;
+    link?: string;
+}
+
+interface Card {
+    id: number;
+    title: string;
+    image?: string;
+    description?: string;
+    contactId: number;
+}
+
 @Component({
-  selector: 'app-admin-contact',
-  standalone: true,
-  templateUrl: './admin-contact.component.html',
-  styleUrls: ['./admin-contact.component.css'],
-  imports: [
-    CommonModule,
-    CalendarComponent,
-    CropperFunctionsComponent,
-    CameraFunctionsComponent, FormsModule
-  ]
+    selector: 'app-admin-contact',
+    standalone: true,
+    templateUrl: './admin-contact.component.html',
+    styleUrls: ['./admin-contact.component.css'],
+    imports: [
+        CommonModule,
+        FormsModule,
+        CropperFunctionsComponent,
+        CameraFunctionsComponent
+    ]
 })
 export class AdminContactComponent {
-  // Steuert, ob die Kamera angezeigt wird
-  showCamera = false;
-  // Steuert, ob der Bild-Zuschneider angezeigt wird
-  showCropper = false;
-  // Steuert, ob der Kalender angezeigt wird
-  showCalendar = false;
+[x: string]: any;
+    contacts: Contact[] = [];
+    cards: Card[] = [];
 
-  // Bild, das bearbeitet werden soll (Base64 oder URL)
-  imageToEdit: string = '';
-  // Ergebnis des zugeschnittenen Bildes
-  croppedImage: string = '';
-  // Form des Zuschnitts: Kreis, Oval oder Quadrat
-  cropShape: 'circle' | 'oval' | 'square' = 'square';
+    newContact: Contact = this.createEmptyContact();
+    newCard: Card = this.createEmptyCard();
 
-  // Aufgabenliste mit Titel, Fälligkeitsdatum und Status
-  tasks = [
-    { title: 'Todo-App erweitern', dueDate: '2025-06-01', status: 'Offen' },
-    // ... dynamisch per Service
-  ];
+    selectedContact?: Contact;
+    selectedCard?: Card;
+    isEditingCard = false;
 
-  // Kontaktliste mit Name und E-Mail
-  contacts = [
-    { name: 'Max Mustermann', email: 'max@example.com' },
-    { name: 'Lisa Musterfrau', email: 'lisa@example.com' }
-  ];
+    showCamera = false;
+    showCropper = false;
+    showNewCard = false;
 
-  // Neues Kontaktobjekt für das Formular
-  newContact: { name?: string; email?: string; photo?: string } = {};
+    imageToEdit = '';
+    croppedImage = '';
+    cropShape: 'circle' | 'oval' | 'square' = 'square';
 
-  onImageSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.newContact.photo = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+    constructor() {
+        this.loadContactsFromLocalStorage();
+        this.loadCardsFromLocalStorage();
     }
-  }
 
-  saveNewContact(): void {
-    console.log('Neuer Kontakt:', this.newContact);
-    // Hier könntest du ihn z.B. per contactService.addContact() speichern
-    // this.contactService.addContact(this.newContact).subscribe(...)
-  }
+    // ========== Kontakte ==========
+    saveNewContact(): void {
+        const contact: Contact = {
+            ...this.newContact,
+            id: Date.now(),
+            link: `https://example.com/contact/${Date.now()}`
+        };
+        this.contacts.push(contact);
+        this.saveContactsToLocalStorage();
+        this.resetNewContact();
+    }
 
-  // Schaltet die Anzeige von Kalender, Cropper oder Kamera um
-  toggle(section: 'calendar' | 'cropper' | 'camera') {
-    this.showCalendar = section === 'calendar' ? !this.showCalendar : false;
-    this.showCropper = section === 'cropper' ? !this.showCropper : false;
-    this.showCamera = section === 'camera' ? !this.showCamera : false;
-  }
+    deleteContact(contact: Contact): void {
+        this.contacts = this.contacts.filter(c => c.id !== contact.id);
+        this.cards = this.cards.filter(card => card.contactId !== contact.id);
+        this.saveContactsToLocalStorage();
+        this.saveCardsToLocalStorage();
+    }
 
-  // Wird aufgerufen, wenn ein Bild von der Kamera aufgenommen wurde
-  onCameraImage(image: string) {
-    this.imageToEdit = image;
-    this.showCropper = true;
-    this.showCamera = false;
-  }
+    selectContact(contact: Contact): void {
+        this.selectedContact = contact;
+    }
 
-  // Wird aufgerufen, wenn das Bild zugeschnitten wurde
-  onCropped(image: string) {
-    this.croppedImage = image;
-    this.imageToEdit = '';
-    this.showCropper = false;
+    private saveContactsToLocalStorage(): void {
+        localStorage.setItem('contacts', JSON.stringify(this.contacts));
+    }
+
+    private loadContactsFromLocalStorage(): void {
+        const data = localStorage.getItem('contacts');
+        if (data) {
+            this.contacts = JSON.parse(data);
+        }
+    }
+
+    private resetNewContact(): void {
+        this.newContact = this.createEmptyContact();
+    }
+
+    private createEmptyContact(): Contact {
+        return {
+            id: 0,
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+            photo: '',
+            link: ''
+        };
+    }
+
+  // ========== Karten ==========
+  editCard(card: Card): void {
+    this.selectedCard = { ...card };
+    this.isEditingCard = true;
   }
+    cancelEditCard(): void {
+        this.selectedCard = undefined;
+        this.isEditingCard = false;
+    }
+
+
+    saveNewCard(): void {
+        if (!this.selectedContact) {
+            alert('Bitte zuerst einen Kontakt auswählen!');
+            return;
+        }
+
+        const card: Card = {
+            ...this.newCard,
+            id: Date.now(),
+            contactId: this.selectedContact.id
+        };
+
+        this.cards.push(card);
+        this.saveCardsToLocalStorage();
+        this.newCard = this.createEmptyCard();
+        this.showNewCard = false;
+    }
+
+    deleteCard(card: Card): void {
+        this.cards = this.cards.filter(c => c.id !== card.id);
+        this.saveCardsToLocalStorage();
+    }
+
+    private saveCardsToLocalStorage(): void {
+        localStorage.setItem('cards', JSON.stringify(this.cards));
+    }
+
+    private loadCardsFromLocalStorage(): void {
+        const data = localStorage.getItem('cards');
+        if (data) {
+            this.cards = JSON.parse(data);
+        }
+    }
+
+    private createEmptyCard(): Card {
+        return {
+            id: 0,
+            title: '',
+            description: '',
+            image: '',
+            contactId: 0
+        };
+    }
+
+    // ========== Bildfunktionen ==========
+    onImageSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.newContact.photo = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    onCardImageSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.newCard.image = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    onCameraImage(image: string): void {
+        this.imageToEdit = image;
+    }
+
+    onCropped(image: string): void {
+        this.croppedImage = image;
+        this.newContact.photo = image;
+        this.showCropper = false;
+        this.imageToEdit = '';
+    }
+
+    toggle(section: 'camera' | 'cropper'): void {
+        this.showCamera = section === 'camera' ? !this.showCamera : false;
+        this.showCropper = section === 'cropper' ? !this.showCropper : false;
+    }
+
+    confirmDeleteContact(contact: Contact): void {
+        if (confirm('Möchtest du diesen Kontakt wirklich löschen?')) {
+            this.deleteContact(contact);
+        }
+    }
+
+    confirmDeleteCard(card: Card): void {
+        if (confirm('Möchtest du diese Karte wirklich löschen?')) {
+            this.deleteCard(card);
+        }
+    }
 }

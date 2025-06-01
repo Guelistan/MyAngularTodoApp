@@ -1,92 +1,96 @@
-<!--
-  admin-contact.component.html
+<div class="admin-contact">
 
-  Diese Komponente stellt das Admin-Kontakt-Dashboard dar.
-  Sie besteht aus folgenden Bereichen:
+    <!-- ===================== Kontaktformular ===================== -->
+    <h2>Neuen Kontakt erstellen</h2>
+    <form (ngSubmit)="saveNewContact()" #contactForm="ngForm" class="contact-form">
+      <input type="text" placeholder="Name" [(ngModel)]="newContact.name" name="name" required>
+      <input type="text" placeholder="Telefon" [(ngModel)]="newContact.phone" name="phone">
+      <input type="text" placeholder="Adresse" [(ngModel)]="newContact.address" name="address">
+      <input type="email" placeholder="E-Mail" [(ngModel)]="newContact.email" name="email" required>
 
-  1. Aufgabenliste:
-     - Zeigt eine Tabelle aller Aufgaben (tasks) mit Titel, Fälligkeitsdatum und Status.
-     - Die Aufgaben werden dynamisch mit *ngFor aus einer tasks-Liste generiert.
+      <!-- Bildbereich -->
+      <div class="image-upload">
+        <label>Kontaktbild:</label>
+        <input type="file" (change)="onImageSelected($event)">
+        <button type="button" (click)="toggle('camera')">📷 Kamera</button>
+        <button type="button" (click)="toggle('cropper')" [disabled]="!newContact.photo">✂️ Zuschneiden</button>
+        @if (newContact.photo) {
+          <img [src]="newContact.photo" alt="Vorschau" width="80" height="80">
+        }
+      </div>
 
-  2. Werkzeuge (rechte Seite):
-     - Kalender: Ein- und ausklappbar, zeigt eine Kalender-Komponente (<app-calendar>).
-     - Bildeditor: Ein- und ausklappbar, zeigt einen Bildeditor (<app-cropper-functions>), wenn ein Bild zum Bearbeiten vorhanden ist.
-     - Kamera: Ein- und ausklappbar, zeigt eine Kamera-Komponente (<app-camera-functions>) zur Aufnahme von Bildern.
+      <button type="submit" [disabled]="!contactForm.form.valid">Kontakt speichern</button>
+    </form>
 
-  3. Kontakte:
-     - Unten werden Kontaktkarten für alle Kontakte (contacts) angezeigt.
-     - Jede Karte zeigt Name und E-Mail-Adresse des Kontakts.
+    <!-- ===================== Kartenformular ===================== -->
+    <button (click)="showNewCard = !showNewCard">
+      {{ showNewCard ? 'Karte verbergen' : 'Neue Karte hinzufügen' }}
+    </button>
 
-  Erwartetes Verhalten:
-  - Die Buttons für Kalender, Bildeditor und Kamera steuern jeweils das Anzeigen/Ausblenden der zugehörigen Bereiche.
-  - Die Komponenten <app-calendar>, <app-cropper-functions> und <app-camera-functions> werden eingebunden und kommunizieren über Events mit der Hauptkomponente.
-  - Die Daten für Aufgaben und Kontakte werden über die Variablen tasks und contacts bereitgestellt.
--->
+    @if (showNewCard) {
+      <div>
+        <h3>Karte hinzufügen</h3>
+        <form (ngSubmit)="saveNewCard()" #cardForm="ngForm" class="card-form">
+          <input type="text" placeholder="Titel" [(ngModel)]="newCard.title" name="title" required>
+          <textarea placeholder="Beschreibung" [(ngModel)]="newCard.description" name="description"></textarea>
+          <input type="file" (change)="onCardImageSelected($event)">
+          @if (newCard.image) {
+            <img [src]="newCard.image" alt="Kartenbild" width="100">
+          }
+          <button type="submit" [disabled]="!cardForm.form.valid">Karte speichern</button>
+        </form>
+      </div>
+    }
 
-<!-- Dashboard-Hauptcontainer -->
-
-<div class="dashboard">
-  <!-- Aufgabenbereich -->
-  <div class="card">
-    <h2>📝 Aufgabenliste</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Aufgabe</th>
-          <th>Fällig</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let task of tasks">
-          <td>{{ task.title }}</td>
-          <td>{{ task.dueDate | date }}</td>
-          <td>{{ task.status }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Rechte Seite: Werkzeuge -->
-  <div class="card">
-    <!-- Kalender -->
-    <button class="collapsible" (click)="toggle('calendar')">📅 Kalender</button>
-    <div class="collapsible-content" [class.open]="showCalendar">
-      <app-calendar></app-calendar>
+    <!-- ===================== Kontaktliste ===================== -->
+    <h2>Kontakte</h2>
+    <div class="contact-list">
+      @for (contact of contacts; track contact.id) {
+        <div class="contact-card" (click)="selectContact(contact)"
+             [class.selected]="selectedContact?.id === contact.id">
+          <div class="contact-info">
+            <div><strong>{{ contact.name }}</strong></div>
+            <div>{{ contact.phone || '-' }}</div>
+            <div>{{ contact.address || '-' }}</div>
+            <div>{{ contact.email }}</div>
+          </div>
+          @if (contact.photo) {
+            <img [src]="contact.photo" alt="Foto" width="80" height="80">
+          }
+          <button (click)="confirmDeleteContact(contact)">🗑️</button>
+        </div>
+      }
     </div>
 
-    <!-- Bildeditor -->
-    <button class="collapsible" (click)="toggle('cropper')">✂️ Bild bearbeiten</button>
-    <div class="collapsible-content" [class.open]="showCropper">
-      <app-cropper-functions *ngIf="imageToEdit" [imageSrc]="imageToEdit" [shape]="cropShape"
+    <!-- ===================== Kartenliste zum gewählten Kontakt ===================== -->
+    @if (selectedContact) {
+      <h3>Karten von {{ selectedContact.name }}</h3>
+      <div class="card-list">
+        @for (card of cards; track card.id) {
+          <div class="card-item">
+            <h4>{{ card.title }}</h4>
+            <p>{{ card.description }}</p>
+            @if (card.image) {
+              <img [src]="card.image" alt="Bild" width="100">
+            }
+            <button (click)="editCard(card)">Bearbeiten</button>
+            <button (click)="confirmDeleteCard(card)">Löschen</button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===================== Kamera & Cropper ===================== -->
+    @if (showCamera) {
+      <app-camera-functions (imageTaken)="onCameraImage($event)"></app-camera-functions>
+    }
+
+    @if (showCropper && imageToEdit) {
+      <app-cropper-functions
+        [imageSrc]="imageToEdit"
+        [shape]="cropShape"
         (cropped)="onCropped($event)">
       </app-cropper-functions>
-    </div>
+    }
 
-    <!-- Kamera -->
-    <button class="collapsible" (click)="toggle('camera')">📷 Kamera aufnehmen</button>
-    <div class="collapsible-content" [class.open]="showCamera">
-      <app-camera-functions (captured)="onCameraImage($event)"></app-camera-functions>
-    </div>
   </div>
-</div>
-
-<!-- Kontakte unten -->
-<div class="contact-cards">
-  <div class="contact-card" *ngFor="let contact of contacts">
-    <h3>{{ contact.name }}</h3>
-    <p>{{ contact.email }}</p>
-  </div>
-</div>
-<!-- Neues Kontaktformular -->
-<div class="card mt-4">
-  <h2>➕ Kontakt hinzufügen</h2>
-
-  <input type="text" [(ngModel)]="newContact.name" placeholder="Name" class="form-control" />
-  <input type="email" [(ngModel)]="newContact.email" placeholder="E-Mail" class="form-control" />
-
-  <input type="file" (change)="onImageSelected($event)" class="form-control" />
-  <img *ngIf="newContact.photo" [src]="newContact.photo" width="100" class="mt-2 rounded" />
-
-  <button (click)="saveNewContact()">💾 Speichern</button>
-</div>

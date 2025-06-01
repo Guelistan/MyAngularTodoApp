@@ -21,6 +21,7 @@ import { FormsModule } from '@angular/forms';
 export class CameraFunctionsComponent {
   @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
   @Output() captured = new EventEmitter<string>();
+  @Output() imageTaken = new EventEmitter<string>();
 
   stream: MediaStream | null = null;
   capturedImage: string | null = null;
@@ -82,6 +83,7 @@ export class CameraFunctionsComponent {
       this.capturedImage = image;
       this.captured.emit(image);
       this.imageToEdit = image;
+      this.imageTaken.emit(image); // Bildaufnahme-Event auslösen
     }
   }
 
@@ -166,6 +168,26 @@ export class CameraFunctionsComponent {
     // Upload-Logik hier einfügen
     console.log('Upload-Funktion noch nicht implementiert.');
   }
+
+
+  onCameraImage(event: Event): void {
+    const image = (event as CustomEvent<string>).detail;
+    if (image) {
+      this.imageToEdit = image;
+    }
+  }
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageToEdit = reader.result as string;
+        this.capturedImage = this.imageToEdit;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
 
   onCameraActionSelect() {
     if (!this.selectedCameraAction) return;

@@ -162,3 +162,15 @@ const newContact: contact = new contact(
   imports: [CommonModule, AdminContactComponent],
 })
 export class AdminContactModule {}
+
+
+export interface AdUser {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  phone?: string;        // hinzufügen
+  address?: string;      // hinzufügen
+  photo?: string;        // hinzufügen
+  link?: string;         // hinzufügen
+}
