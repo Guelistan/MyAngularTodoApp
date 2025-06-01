@@ -22,6 +22,7 @@ export class CameraFunctionsComponent {
   @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
   @Output() captured = new EventEmitter<string>();
   @Output() imageTaken = new EventEmitter<string>();
+  @Output() imageCaptured = new EventEmitter<string>();
 
   stream: MediaStream | null = null;
   capturedImage: string | null = null;
@@ -84,6 +85,7 @@ export class CameraFunctionsComponent {
       this.captured.emit(image);
       this.imageToEdit = image;
       this.imageTaken.emit(image); // Bildaufnahme-Event auslösen
+      this.imageCaptured.emit(image); // Neues Event für die Bildaufnahme
     }
   }
 

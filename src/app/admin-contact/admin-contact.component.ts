@@ -7,20 +7,28 @@ import { CameraFunctionsComponent } from '../camera-functions/camera-functions.c
 
 interface Contact {
     id: number;
-    name: string;
-    email: string;
+    title?: string;
+    description?: string;
+    image?: string;
     photo?: string;
-    phone?: string;
+    name?: string;
     address?: string;
+    phone?: string;
+    email?: string; // <--- HIER ergänzen!
     link?: string;
+    contactId?: number;
 }
 
 interface Card {
     id: number;
     title: string;
+    description: string;
     image?: string;
-    description?: string;
-    contactId: number;
+    name?: string;
+    address?: string;
+    phone?: string;
+    link?: string;
+    contactId?: number;
 }
 
 @Component({
@@ -30,13 +38,12 @@ interface Card {
     styleUrls: ['./admin-contact.component.css'],
     imports: [
         CommonModule,
-        FormsModule,
-        CropperFunctionsComponent,
-        CameraFunctionsComponent
+        FormsModule, CameraFunctionsComponent, CropperFunctionsComponent
+
     ]
 })
 export class AdminContactComponent {
-[x: string]: any;
+    [x: string]: any;
     contacts: Contact[] = [];
     cards: Card[] = [];
 
@@ -60,6 +67,42 @@ export class AdminContactComponent {
         this.loadCardsFromLocalStorage();
     }
 
+    trackCardById(index: number, card: Card): number {
+        return card.id;
+    }
+
+    copyLink(link: string): void {
+        navigator.clipboard.writeText(link);
+    }
+
+    onDragOver(event: DragEvent) {
+        event.preventDefault();
+    }
+
+    onCardImageDropped(event: DragEvent) {
+        event.preventDefault();
+        const file = event.dataTransfer?.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.newCard.image = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    onContactImageDropped(event: DragEvent) {
+        event.preventDefault();
+        const file = event.dataTransfer?.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.newContact.photo = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     // ========== Kontakte ==========
     saveNewContact(): void {
         const contact: Contact = {
@@ -69,6 +112,22 @@ export class AdminContactComponent {
         };
         this.contacts.push(contact);
         this.saveContactsToLocalStorage();
+
+        // Automatisch eine Karte für den Kontakt anlegen
+        const card: Card = {
+            id: Date.now(),
+            title: contact.title || contact.name || 'Kontakt',
+            description: contact.description || '',
+            image: contact.image || contact.photo || '',
+            name: contact.name,
+            address: contact.address,
+            phone: contact.phone,
+            link: contact.link,
+            contactId: contact.id
+        };
+        this.cards.push(card);
+        this.saveCardsToLocalStorage();
+
         this.resetNewContact();
     }
 
@@ -94,7 +153,7 @@ export class AdminContactComponent {
         }
     }
 
-    private resetNewContact(): void {
+    public resetNewContact() {
         this.newContact = this.createEmptyContact();
     }
 
@@ -110,16 +169,28 @@ export class AdminContactComponent {
         };
     }
 
-  // ========== Karten ==========
-  editCard(card: Card): void {
-    this.selectedCard = { ...card };
-    this.isEditingCard = true;
-  }
+    // ========== Karten ==========
+    editCard(card: Card): void {
+        this.selectedCard = { ...card };
+        this.isEditingCard = true;
+    }
+
     cancelEditCard(): void {
         this.selectedCard = undefined;
         this.isEditingCard = false;
+        this.showCardCamera = false;
+        this.showCardCropper = false;
     }
 
+    saveEditedCard(): void {
+        if (!this.selectedCard) return;
+        const idx = this.cards.findIndex(c => c.id === this.selectedCard!.id);
+        if (idx !== -1) {
+            this.cards[idx] = { ...this.selectedCard! };
+            this.saveCardsToLocalStorage();
+        }
+        this.cancelEditCard();
+    }
 
     saveNewCard(): void {
         if (!this.selectedContact) {
@@ -215,6 +286,93 @@ export class AdminContactComponent {
     confirmDeleteCard(card: Card): void {
         if (confirm('Möchtest du diese Karte wirklich löschen?')) {
             this.deleteCard(card);
+        }
+    }
+
+    // Neue Variablen
+    imageToEditCard = '';
+    croppedCardImage = '';
+    showCardCamera = false;
+    showCardCropper = false;
+    editingCardImageId: number | null = null;
+
+    // Kamera-Bild für neue Karte
+    onCardCameraImage(image: string): void {
+        this.imageToEditCard = image;
+        this.showCardCropper = true;
+    }
+
+    // Bild nach Zuschneiden übernehmen
+    onCardCropped(image: string): void {
+        if (this.editingCardImageId !== null) {
+            const card = this.cards.find(c => c.id === this.editingCardImageId);
+            if (card) {
+                card.image = image;
+                this.saveCardsToLocalStorage();
+            }
+            this.editingCardImageId = null;
+        } else {
+            this.newCard.image = image;
+        }
+
+        this.imageToEditCard = '';
+        this.showCardCropper = false;
+        this.showCardCamera = false;
+    }
+
+    // Bild einer bestehenden Karte bearbeiten
+    editCardImage(card: Card): void {
+        this.imageToEditCard = card.image || '';
+        this.editingCardImageId = card.id;
+        this.showCardCropper = true;
+    }
+
+    // Bild per Datei
+    onEditCardImageSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (this.selectedCard) this.selectedCard.image = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Bild per Drag & Drop
+    onEditCardImageDropped(event: DragEvent): void {
+        event.preventDefault();
+        const file = event.dataTransfer?.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (this.selectedCard) this.selectedCard.image = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Bild per Kamera
+    onEditCardCameraImage(image: string): void {
+        if (this.selectedCard) this.selectedCard.image = image;
+        this.showCardCamera = false;
+    }
+
+    // Bild zuschneiden
+    onEditCardCropped(image: string): void {
+        if (this.selectedCard) this.selectedCard.image = image;
+        this.showCardCropper = false;
+    }
+
+    resetNewCard(): void {
+        this.newCard = this.createEmptyCard();
+    }
+
+    ngOnInit() {
+        const stored = localStorage.getItem('cards');
+        if (stored) {
+            this.cards = JSON.parse(stored);
         }
     }
 }

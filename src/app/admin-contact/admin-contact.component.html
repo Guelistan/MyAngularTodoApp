@@ -1,96 +1,109 @@
-<div class="admin-contact">
-
-    <!-- ===================== Kontaktformular ===================== -->
-    <h2>Neuen Kontakt erstellen</h2>
-    <form (ngSubmit)="saveNewContact()" #contactForm="ngForm" class="contact-form">
-      <input type="text" placeholder="Name" [(ngModel)]="newContact.name" name="name" required>
-      <input type="text" placeholder="Telefon" [(ngModel)]="newContact.phone" name="phone">
-      <input type="text" placeholder="Adresse" [(ngModel)]="newContact.address" name="address">
-      <input type="email" placeholder="E-Mail" [(ngModel)]="newContact.email" name="email" required>
-
-      <!-- Bildbereich -->
-      <div class="image-upload">
-        <label>Kontaktbild:</label>
-        <input type="file" (change)="onImageSelected($event)">
-        <button type="button" (click)="toggle('camera')">📷 Kamera</button>
-        <button type="button" (click)="toggle('cropper')" [disabled]="!newContact.photo">✂️ Zuschneiden</button>
-        @if (newContact.photo) {
-          <img [src]="newContact.photo" alt="Vorschau" width="80" height="80">
-        }
-      </div>
-
-      <button type="submit" [disabled]="!contactForm.form.valid">Kontakt speichern</button>
-    </form>
-
-    <!-- ===================== Kartenformular ===================== -->
-    <button (click)="showNewCard = !showNewCard">
-      {{ showNewCard ? 'Karte verbergen' : 'Neue Karte hinzufügen' }}
-    </button>
-
-    @if (showNewCard) {
-      <div>
-        <h3>Karte hinzufügen</h3>
-        <form (ngSubmit)="saveNewCard()" #cardForm="ngForm" class="card-form">
-          <input type="text" placeholder="Titel" [(ngModel)]="newCard.title" name="title" required>
-          <textarea placeholder="Beschreibung" [(ngModel)]="newCard.description" name="description"></textarea>
-          <input type="file" (change)="onCardImageSelected($event)">
-          @if (newCard.image) {
-            <img [src]="newCard.image" alt="Kartenbild" width="100">
-          }
-          <button type="submit" [disabled]="!cardForm.form.valid">Karte speichern</button>
-        </form>
-      </div>
-    }
-
-    <!-- ===================== Kontaktliste ===================== -->
-    <h2>Kontakte</h2>
-    <div class="contact-list">
-      @for (contact of contacts; track contact.id) {
-        <div class="contact-card" (click)="selectContact(contact)"
-             [class.selected]="selectedContact?.id === contact.id">
-          <div class="contact-info">
-            <div><strong>{{ contact.name }}</strong></div>
-            <div>{{ contact.phone || '-' }}</div>
-            <div>{{ contact.address || '-' }}</div>
-            <div>{{ contact.email }}</div>
-          </div>
-          @if (contact.photo) {
-            <img [src]="contact.photo" alt="Foto" width="80" height="80">
-          }
-          <button (click)="confirmDeleteContact(contact)">🗑️</button>
-        </div>
-      }
-    </div>
-
-    <!-- ===================== Kartenliste zum gewählten Kontakt ===================== -->
-    @if (selectedContact) {
-      <h3>Karten von {{ selectedContact.name }}</h3>
-      <div class="card-list">
-        @for (card of cards; track card.id) {
-          <div class="card-item">
-            <h4>{{ card.title }}</h4>
-            <p>{{ card.description }}</p>
-            @if (card.image) {
-              <img [src]="card.image" alt="Bild" width="100">
-            }
-            <button (click)="editCard(card)">Bearbeiten</button>
-            <button (click)="confirmDeleteCard(card)">Löschen</button>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- ===================== Kamera & Cropper ===================== -->
-    @if (showCamera) {
-      <app-camera-functions (imageTaken)="onCameraImage($event)"></app-camera-functions>
-    }
-
-    @if (showCropper && imageToEdit) {
-      <app-cropper-functions
-        [imageSrc]="imageToEdit"
-        [shape]="cropShape"
-        (cropped)="onCropped($event)">
-      </app-cropper-functions>
-    }
-
+<!-- Neue Karte/Kontakt erstellen -->
+<div class="new-card-form">
+  <h3>Neuen Kontakt erstellen</h3>
+  <input type="text" [(ngModel)]="newContact.name" placeholder="Name" />
+  <input type="text" [(ngModel)]="newContact.title" placeholder="Titel" />
+  <input type="text" [(ngModel)]="newContact.address" placeholder="Adresse" />
+  <input type="text" [(ngModel)]="newContact.phone" placeholder="Telefon" />
+  <input type="email" [(ngModel)]="newContact.email" placeholder="E-Mail" />
+  <input type="text" [(ngModel)]="newContact.link" placeholder="Link" />
+  <textarea [(ngModel)]="newContact.description" placeholder="Beschreibung"></textarea>
+  <input type="file" (change)="onImageSelected($event)" />
+  <div *ngIf="newContact.photo">
+    <img [src]="newContact.photo" alt="Kontaktbild" width="80" />
   </div>
+  <button (click)="saveNewContact()">💾 Kontakt speichern</button>
+  <button (click)="resetNewContact()">🧹 Zurücksetzen</button>
+</div>
+
+<hr />
+
+<h3>Alle Kontakte</h3>
+<div class="contact-list">
+  <div class="contact-card" *ngFor="let contact of contacts">
+    <h4>{{ contact.name }}</h4>
+    <p><strong>Titel:</strong> {{ contact.title }}</p>
+    <p><strong>Adresse:</strong> {{ contact.address }}</p>
+    <p><strong>Telefon:</strong> {{ contact.phone }}</p>
+    <p><strong>E-Mail:</strong> <a *ngIf="contact.email" href="mailto:{{contact.email}}">{{ contact.email }}</a></p>
+    <p><strong>Link:</strong> <a *ngIf="contact.link" [href]="contact.link" target="_blank">{{ contact.link }}</a></p>
+    <p><strong>Beschreibung:</strong> {{ contact.description }}</p>
+    <img *ngIf="contact.image || contact.photo" [src]="contact.image || contact.photo" alt="Kontaktbild" width="80" />
+    <div class="contact-actions">
+      <button (click)="selectContact(contact)">Karte anzeigen</button>
+      <button (click)="confirmDeleteContact(contact)">🗑️ Löschen</button>
+    </div>
+  </div>
+</div>
+
+<hr />
+
+<!-- Karten anzeigen -->
+<h3>Karten</h3>
+<div class="card-grid">
+  <div class="card" *ngFor="let card of cards; trackBy: trackCardById">
+    <div class="card-content">
+      <div class="card-info">
+        <h4>{{ card.title }}</h4>
+        <p><strong>Name:</strong> {{ card.name }}</p>
+        <p><strong>Titel:</strong> {{ card.title }}</p>
+        <p><strong>Adresse:</strong> {{ card.address }}</p>
+        <p><strong>Telefon:</strong> {{ card.phone }}</p>
+        <p><strong>Beschreibung:</strong> {{ card.description }}</p>
+        <p><strong>Link:</strong> <a *ngIf="card.link" [href]="card.link" target="_blank">{{ card.link }}</a></p>
+        <p><strong>Kontakt-ID:</strong> {{ card.contactId }}</p>
+      </div>
+      <div class="card-image" *ngIf="card.image">
+        <img [src]="card.image" alt="Kontaktbild" />
+      </div>
+      <div class="card-actions">
+        <button (click)="editCard(card)">Bearbeiten</button>
+        <button (click)="confirmDeleteCard(card)">🗑️ Löschen</button>
+        <button *ngIf="card.link" (click)="copyLink(card.link)">🔗 Link kopieren</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bearbeitungsformular für Karte -->
+<div *ngIf="isEditingCard && selectedCard" class="edit-card-form">
+  <h3>Karte bearbeiten</h3>
+  <input type="text" [(ngModel)]="selectedCard.title" placeholder="Titel" />
+  <input type="text" [(ngModel)]="selectedCard.name" placeholder="Name" />
+  <input type="text" [(ngModel)]="selectedCard.address" placeholder="Adresse" />
+  <input type="text" [(ngModel)]="selectedCard.phone" placeholder="Telefon" />
+  <textarea [(ngModel)]="selectedCard.description" placeholder="Beschreibung"></textarea>
+  <input type="text" [(ngModel)]="selectedCard.link" placeholder="Link" />
+
+  <!-- Bild anzeigen -->
+  <div *ngIf="selectedCard.image">
+    <img [src]="selectedCard.image" alt="Kartenbild" width="120" />
+  </div>
+
+  <!-- Bild hinzufügen: Datei -->
+  <input type="file" (change)="onEditCardImageSelected($event)" />
+
+  <!-- Drag & Drop -->
+  <div class="dropzone"
+       (dragover)="onDragOver($event)"
+       (drop)="onEditCardImageDropped($event)">
+    Bild hierher ziehen
+  </div>
+
+  <!-- Kamera -->
+  <button type="button" (click)="showCardCamera = true">📷 Kamera</button>
+  <app-camera-functions *ngIf="showCardCamera"
+    (imageTaken)="onEditCardCameraImage($event)">
+  </app-camera-functions>
+
+  <!-- Cropper -->
+  <button type="button" (click)="showCardCropper = true" [disabled]="!selectedCard.image">✂️ Zuschneiden</button>
+  <app-cropper-functions *ngIf="showCardCropper && selectedCard.image"
+    [imageSrc]="selectedCard.image"
+    [shape]="cropShape"
+    (cropped)="onEditCardCropped($event)">
+  </app-cropper-functions>
+
+  <button (click)="saveEditedCard()">💾 Speichern</button>
+  <button (click)="cancelEditCard()">Abbrechen</button>
+</div>
