@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { CropperFunctionsComponent } from '../cropper-functions/cropper-functions.component';
 import { CameraFunctionsComponent } from '../camera-functions/camera-functions.component';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 interface Contact {
     id: number;
@@ -38,9 +39,7 @@ interface Card {
     styleUrls: ['./admin-contact.component.css'],
     imports: [
         CommonModule,
-        FormsModule, CameraFunctionsComponent, CropperFunctionsComponent
-
-    ]
+        FormsModule, CameraFunctionsComponent, CropperFunctionsComponent,RouterLink]
 })
 export class AdminContactComponent {
     [x: string]: any;
@@ -374,5 +373,10 @@ export class AdminContactComponent {
         if (stored) {
             this.cards = JSON.parse(stored);
         }
+    }
+
+    goBackToCards(): void {
+        this.isEditingCard = false;
+        this.selectedCard = undefined;
     }
 }

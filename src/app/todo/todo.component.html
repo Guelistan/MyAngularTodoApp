@@ -1,10 +1,19 @@
+<!-- Admin Contact Link -->
+
+<h3>
+  <div class="mt-4">
+    <a routerLink="/admin-contact" class="btn btn-link">Admin Kontakte</a>
+  </div>
+</h3>
+<router-outlet></router-outlet>
+
 <!-- Collapse Button -->
 <div class="mb-3">
   <button (click)="toggleCollapse()" class="btn btn-secondary">
     {{ showTodos ? 'Erledigte Aufgaben verstecken' : 'Erledigte Aufgaben anzeigen' }}
   </button>
 </div>
-
+<hr>
 <!-- ToDo List -->
 <div *ngIf="showTodos" class="todo-list">
   <div *ngFor="let todo of todos; let i = index" class="todo-card" [style.background]="todo.color || '#fff'"
@@ -99,9 +108,3 @@
     <li *ngFor="let item of history" class="list-group-item">{{ item }}</li>
   </ul>
 </div>
-
-<!-- Admin Contact Link -->
-<div class="mt-4">
-  <a routerLink="/admin-contact" class="btn btn-link">Admin Kontakte</a>
-</div>
-<router-outlet></router-outlet>

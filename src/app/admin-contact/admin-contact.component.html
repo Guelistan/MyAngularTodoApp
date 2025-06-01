@@ -1,3 +1,8 @@
+<h2>
+  <div class="navigation">
+    <a [routerLink]="['/']" routerLinkActive="router-link-active">🏠 Zum Hauptmenü</a>
+  </div>
+</h2>
 <!-- Neue Karte/Kontakt erstellen -->
 <div class="new-card-form">
   <h3>Neuen Kontakt erstellen</h3>
@@ -84,26 +89,20 @@
   <input type="file" (change)="onEditCardImageSelected($event)" />
 
   <!-- Drag & Drop -->
-  <div class="dropzone"
-       (dragover)="onDragOver($event)"
-       (drop)="onEditCardImageDropped($event)">
+  <div class="dropzone" (dragover)="onDragOver($event)" (drop)="onEditCardImageDropped($event)">
     Bild hierher ziehen
   </div>
 
   <!-- Kamera -->
   <button type="button" (click)="showCardCamera = true">📷 Kamera</button>
-  <app-camera-functions *ngIf="showCardCamera"
-    (imageTaken)="onEditCardCameraImage($event)">
+  <app-camera-functions *ngIf="showCardCamera" (imageTaken)="onEditCardCameraImage($event)">
   </app-camera-functions>
 
   <!-- Cropper -->
   <button type="button" (click)="showCardCropper = true" [disabled]="!selectedCard.image">✂️ Zuschneiden</button>
-  <app-cropper-functions *ngIf="showCardCropper && selectedCard.image"
-    [imageSrc]="selectedCard.image"
-    [shape]="cropShape"
-    (cropped)="onEditCardCropped($event)">
+  <app-cropper-functions *ngIf="showCardCropper && selectedCard.image" [imageSrc]="selectedCard.image"
+    [shape]="cropShape" (cropped)="onEditCardCropped($event)">
   </app-cropper-functions>
 
   <button (click)="saveEditedCard()">💾 Speichern</button>
   <button (click)="cancelEditCard()">Abbrechen</button>
-</div>

@@ -1,0 +1,66 @@
+/* Karten-Grid nebeneinander */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: flex-start;
+}
+
+/* Einzelne Karte */
+.card {
+  width: 400px;
+  min-width: 400px;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 20px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+
+/* Bild rechts in der Karte, vertikal zentriert */
+.card-image {
+
+  margin-right: auto;
+  margin-left: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.card-image img {
+  width: 200px;
+  height: 200px;
+}
+
+/* Aktionen unter der Karte */
+.card-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Optional: Kontaktkarten-Liste */
+.contact-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.contact-card {
+  width: 350px;
+  background: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px #0002;
+  margin-bottom: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Buttons und weitere Styles wie gehabt ... */
