@@ -20,15 +20,6 @@
       </button>
     </section>
 
-    <!-- Kamera Steuerung -->
-    <div class="camera-controls">
-      <label for="cameraActionSelect">Kamera-Aktion auswählen:</label>
-      <select id="cameraActionSelect" [(ngModel)]="selectedCameraAction">
-        <option [ngValue]="null" disabled selected>Aktion wählen...</option>
-        <option *ngFor="let action of cameraActions" [ngValue]="action">{{ action.label }}</option>
-      </select>
-      <button type="button" (click)="onCameraActionSelect()">Ausführen</button>
-    </div>
 
     <!-- Aufgenommenes Bild anzeigen -->
     @if (capturedImage) {
@@ -40,45 +31,46 @@
   </section>
   }
 
-  <!-- Bildbearbeitung mit Cropper -->
-  @if (showCropper() && imageToEdit) {
-  <section class="image-editing">
-    <h3>🛠️ Bild bearbeiten</h3>
+  <!-- Bildbearbeitung mit Cropper und Funktionen nur bei 'Bild zuschneiden' -->
+  <div *ngIf="selectedCameraAction?.value === 'cropImage' && imageToEdit">
+    <section class="image-editing">
+      <h3>🛠️ Bild bearbeiten</h3>
 
-    <app-cropper-functions [imageSrc]="imageToEdit" [shape]="cropShape()" (cropped)="onCropped($event)">
-    </app-cropper-functions>
+      <app-cropper-functions [imageSrc]="imageToEdit" [shape]="cropShape()" (cropped)="onCropped($event)">
+      </app-cropper-functions>
 
-    <!-- Formauswahl -->
-    <div class="shape-options">
-      <h4>Als Form speichern:</h4>
-      <button (click)="setCropShape('oval')">Oval</button>
-      <button (click)="setCropShape('circle')">Rund</button>
-      <button (click)="setCropShape('square')">Viereckig</button>
-    <!-- Erweiterte Funktionen -->
-    <div class="advanced-options">
-      <h4>Weitere Funktionen:</h4>
-      <div class="filter-controls">
-        <label>Kontrast:
-          <input type="range" min="50" max="200" [(ngModel)]="contrast" (input)="applyFilters()" />
-        </label>
-        <label>Helligkeit:
-          <input type="range" min="50" max="200" [(ngModel)]="brightness" (input)="applyFilters()" />
-        </label>
+      <!-- Formauswahl -->
+      <div class="shape-options">
+        <h4>Als Form speichern:</h4>
+        <button (click)="setCropShape('oval')">Oval</button>
+        <button (click)="setCropShape('circle')">Rund</button>
+        <button (click)="setCropShape('square')">Viereckig</button>
       </div>
-      <div class="rotate-controls">
-        <button type="button" (click)="rotateImage(90)">↻ 90° drehen</button>
-        <button type="button" (click)="flipImage('horizontal')">↔ Spiegeln</button>
-        <button type="button" (click)="flipImage('vertical')">↕ Spiegeln</button>
+
+      <!-- Erweiterte Funktionen -->
+      <div class="advanced-options">
+        <h4>Weitere Funktionen:</h4>
+        <div class="filter-controls">
+          <label>Kontrast:
+            <input type="range" min="50" max="200" [(ngModel)]="contrast" (input)="applyFilters()" />
+          </label>
+          <label>Helligkeit:
+            <input type="range" min="50" max="200" [(ngModel)]="brightness" (input)="applyFilters()" />
+          </label>
+        </div>
+        <div class="rotate-controls">
+          <button type="button" (click)="rotateImage(90)">↻ 90° drehen</button>
+          <button type="button" (click)="flipImage('horizontal')">↔ Spiegeln</button>
+          <button type="button" (click)="flipImage('vertical')">↕ Spiegeln</button>
+        </div>
+        <div class="zoom-controls">
+          <label>Zoom:
+            <input type="range" min="1" max="3" step="0.1" [(ngModel)]="zoom" (input)="applyZoom()" />
+          </label>
+        </div>
       </div>
-      <div class="zoom-controls">
-        <label>Zoom:
-          <input type="range" min="1" max="3" step="0.1" [(ngModel)]="zoom" (input)="applyZoom()" />
-        </label>
-      </div>
-    </div>
-    </div>
-  </section>
-  }
+    </section>
+  </div>
 
   <!-- Vorschau des bearbeiteten Bildes -->
   @if (croppedImage) {
@@ -87,4 +79,28 @@
     <img [src]="croppedImage" alt="Bearbeitetes Bild" style="max-width: 100%; border: 1px solid #ccc;" />
   </div>
   }
+</div>
+
+
+<!-- Kamera Steuerung -->
+<div class="camera-controls">
+  <label for="cameraActionSelect">Kamera-Aktion auswählen:</label>
+  <select id="cameraActionSelect" [(ngModel)]="selectedCameraAction">
+    <option [ngValue]="null" disabled selected>Aktion wählen...</option>
+    <option *ngFor="let action of cameraActions" [ngValue]="action">{{ action.label }}</option>
+  </select>
+  <button type="button" (click)="onCameraActionSelect()">Ausführen</button>
+</div>
+<!-- camera-functions.component.html -->
+<div class="camera-actions" style="margin-bottom: 16px;">
+  <label *ngFor="let action of cameraActions" style="display: block; margin-bottom: 4px;">
+    <input
+      type="radio"
+      name="cameraAction"
+      [value]="action"
+      [(ngModel)]="selectedCameraAction"
+      (change)="onCameraActionSelect()"
+    />
+    {{ action.label }}
+  </label>
 </div>

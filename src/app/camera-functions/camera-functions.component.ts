@@ -19,18 +19,18 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./camera-functions.component.css']
 })
 export class CameraFunctionsComponent {
-applyFilters() {
-throw new Error('Method not implemented.');
-}
-rotateImage(arg0: number) {
-throw new Error('Method not implemented.');
-}
-flipImage(arg0: string) {
-throw new Error('Method not implemented.');
-}
-applyZoom() {
-throw new Error('Method not implemented.');
-}
+  applyFilters() {
+    throw new Error('Method not implemented.');
+  }
+  rotateImage(arg0: number) {
+    throw new Error('Method not implemented.');
+  }
+  flipImage(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
+  applyZoom() {
+    throw new Error('Method not implemented.');
+  }
   @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
   @Output() captured = new EventEmitter<string>();
   @Output() imageTaken = new EventEmitter<string>();
@@ -62,9 +62,9 @@ throw new Error('Method not implemented.');
     { label: 'Kamera stoppen', value: 'stopCamera' },
     { label: 'Kamera zurücksetzen', value: 'resetCamera' }
   ];
-contrast: any;
-brightness: any;
-zoom: any;
+  contrast: any;
+  brightness: any;
+  zoom: any;
 
   constructor(private sanitizer: DomSanitizer) { }
 

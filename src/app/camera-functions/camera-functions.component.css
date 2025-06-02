@@ -1,109 +1,19 @@
-.camera-container {
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 24px;
-  max-width: 480px;
-  margin: 32px auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-}
-
-.camera-container h2 {
-  font-size: 1.4rem;
-  margin-bottom: 16px;
-  user-select: none;
-}
-
-.add-image {
-  margin: 18px 0;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.camera-controls {
-  margin: 16px 0;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.camera-controls select {
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #bbb;
-}
-
-.camera-controls button {
-  padding: 5px 12px;
-  border-radius: 4px;
-  border: none;
-  background: #1976d2;
-  color: #fff;
+.camera-actions input[type="radio"] {
+  width: 28px;
+  height: 28px;
+  accent-color: #1976d2;
+  /* macht den Radio-Button blau/bunt in modernen Browsern */
+  margin-right: 10px;
+  vertical-align: middle;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.camera-controls button:hover {
-  background: #125ea2;
-}
-
-.image-editing {
-  background: #fff;
-  border-radius: 6px;
-  padding: 16px;
-  margin-top: 18px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-.shape-options {
-  margin: 14px 0;
-  display: flex;
-  gap: 10px;
-}
-
-.shape-options button {
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: 1px solid #1976d2;
-  background: #e3f2fd;
+.camera-actions label {
+  font-size: 1.2rem;
   color: #1976d2;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.shape-options button:hover {
-  background: #bbdefb;
-}
-
-.advanced-options {
-  margin-top: 10px;
-  font-size: 0.97rem;
-  color: #444;
-}
-
-.preview {
-  background: #fff;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-}
-
-.preview img {
-  display: block;
-  margin: 0 auto;
-  border-radius: 4px;
-}
-
-button[type="button"] {
-  padding: 5px 12px;
-  border-radius: 4px;
-  border: none;
-  background: #1976d2;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button[type="button"]:hover {
-  background: #125ea2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
