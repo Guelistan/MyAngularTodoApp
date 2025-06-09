@@ -1,10 +1,10 @@
-<h2>
-  <div class="navigation">
-    <a [routerLink]="['/']" routerLinkActive="router-link-active">🏠 Zum Hauptmenü</a>
-  </div>
-</h2>
-<!-- Neue Karte/Kontakt erstellen -->
-<div class="new-card-form">
+<!-- Navigation -->
+<div class="navigation mb-3">
+  <a [routerLink]="['/']" routerLinkActive="router-link-active">🏠 Zum Hauptmenü</a>
+</div>
+
+<!-- Neue Kontaktkarte erstellen -->
+<div class="new-card-form mb-4">
   <h3>Neuen Kontakt erstellen</h3>
   <input type="text" [(ngModel)]="newContact.name" placeholder="Name" />
   <input type="text" [(ngModel)]="newContact.title" placeholder="Titel" />
@@ -23,29 +23,69 @@
 
 <hr />
 
+<!-- Kontaktliste -->
 <h3>Alle Kontakte</h3>
-<div class="contact-list">
+<div class="contact-list mb-4">
   <div class="contact-card" *ngFor="let contact of contacts">
-    <h4>{{ contact.name }}</h4>
-    <p><strong>Titel:</strong> {{ contact.title }}</p>
-    <p><strong>Adresse:</strong> {{ contact.address }}</p>
-    <p><strong>Telefon:</strong> {{ contact.phone }}</p>
-    <p><strong>E-Mail:</strong> <a *ngIf="contact.email" href="mailto:{{contact.email}}">{{ contact.email }}</a></p>
-    <p><strong>Link:</strong> <a *ngIf="contact.link" [href]="contact.link" target="_blank">{{ contact.link }}</a></p>
-    <p><strong>Beschreibung:</strong> {{ contact.description }}</p>
+    <h4>{{ contact.name || contact.displayName }}</h4>
+    <p *ngIf="contact.title"><strong>Titel:</strong> {{ contact.title }}</p>
+    <p *ngIf="contact.address"><strong>Adresse:</strong> {{ contact.address }}</p>
+    <p *ngIf="contact.phone || contact.tel"><strong>Telefon:</strong> {{ contact.phone || contact.tel }}</p>
+    <p *ngIf="contact.email"><strong>E-Mail:</strong> <a href="mailto:{{contact.email}}">{{ contact.email }}</a></p>
+    <p *ngIf="contact.link"><strong>Link:</strong> <a [href]="contact.link" target="_blank">{{ contact.link }}</a></p>
+    <p *ngIf="contact.description"><strong>Beschreibung:</strong> {{ contact.description }}</p>
     <img *ngIf="contact.image || contact.photo" [src]="contact.image || contact.photo" alt="Kontaktbild" width="80" />
     <div class="contact-actions">
       <button (click)="selectContact(contact)">Karte anzeigen</button>
-      <button (click)="confirmDeleteContact(contact)">🗑️ Löschen</button>
+      <!--button (click)="confirmDeleteContact(contact)">🗑️ Löschen</button-->
     </div>
   </div>
 </div>
+
+<!-- Kontakt-Tabelle -->
+<table class="table table-hover mb-4">
+  <thead>
+    <tr>
+      <th scope="col">Bild</th>
+      <th scope="col">Kennung</th>
+      <th scope="col">Name</th>
+      <th scope="col">Telefon</th>
+      <th scope="col">Rolle</th>
+      <th scope="col">Optionen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let contact of contacts" style="font-size: 10pt; vertical-align: middle">
+      <td class="col-2">
+        <img [src]="contact.photo ? './assets/photos/' + contact.photo : contact.image" alt="Foto nicht gefunden" width="100" />
+      </td>
+      <td class="col-2">{{ contact.identity }}</td>
+      <td class="col-3">{{ contact.displayName || contact.name }}</td>
+      <td class="col-2">{{ contact.tel || contact.phone }}</td>
+      <td class="col-2">{{ contact.role }}</td>
+      <td class="col-1">
+        <div class="mb-2" style="text-align: center">
+          <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target=".editModal"
+            (click)="chooseContact(contact); resetDataForEditModal()">
+            <i class="bi bi-pencil"></i>
+          </button>
+        </div>
+        <div style="text-align: center">
+          <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target=".deleteModal"
+            (click)="chooseContact(contact)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <hr />
 
 <!-- Karten anzeigen -->
 <h3>Karten</h3>
-<div class="card-grid">
+<div class="card-grid mb-4">
   <div class="card" *ngFor="let card of cards; trackBy: trackCardById">
     <div class="card-content">
       <div class="card-info">
@@ -55,7 +95,7 @@
         <p><strong>Adresse:</strong> {{ card.address }}</p>
         <p><strong>Telefon:</strong> {{ card.phone }}</p>
         <p><strong>Beschreibung:</strong> {{ card.description }}</p>
-        <p><strong>Link:</strong> <a *ngIf="card.link" [href]="card.link" target="_blank">{{ card.link }}</a></p>
+        <p *ngIf="card.link"><strong>Link:</strong> <a [href]="card.link" target="_blank">{{ card.link }}</a></p>
         <p><strong>Kontakt-ID:</strong> {{ card.contactId }}</p>
       </div>
       <div class="card-image" *ngIf="card.image">
@@ -71,7 +111,7 @@
 </div>
 
 <!-- Bearbeitungsformular für Karte -->
-<div *ngIf="isEditingCard && selectedCard" class="edit-card-form">
+<div *ngIf="isEditingCard && selectedCard" class="edit-card-form mb-4">
   <h3>Karte bearbeiten</h3>
   <input type="text" [(ngModel)]="selectedCard.title" placeholder="Titel" />
   <input type="text" [(ngModel)]="selectedCard.name" placeholder="Name" />
@@ -79,30 +119,291 @@
   <input type="text" [(ngModel)]="selectedCard.phone" placeholder="Telefon" />
   <textarea [(ngModel)]="selectedCard.description" placeholder="Beschreibung"></textarea>
   <input type="text" [(ngModel)]="selectedCard.link" placeholder="Link" />
-
-  <!-- Bild anzeigen -->
   <div *ngIf="selectedCard.image">
     <img [src]="selectedCard.image" alt="Kartenbild" width="120" />
   </div>
-
-  <!-- Bild hinzufügen: Datei -->
   <input type="file" (change)="onEditCardImageSelected($event)" />
-
-  <!-- Drag & Drop -->
   <div class="dropzone" (dragover)="onDragOver($event)" (drop)="onEditCardImageDropped($event)">
     Bild hierher ziehen
   </div>
-
-  <!-- Kamera -->
   <button type="button" (click)="showCardCamera = true">📷 Kamera</button>
-  <app-camera-functions *ngIf="showCardCamera" (imageTaken)="onEditCardCameraImage($event)">
-  </app-camera-functions>
-
-  <!-- Cropper -->
+  <app-camera-functions *ngIf="showCardCamera" (imageTaken)="onEditCardCameraImage($event)"></app-camera-functions>
   <button type="button" (click)="showCardCropper = true" [disabled]="!selectedCard.image">✂️ Zuschneiden</button>
   <app-cropper-functions *ngIf="showCardCropper && selectedCard.image" [imageSrc]="selectedCard.image"
     [shape]="cropShape" (cropped)="onEditCardCropped($event)">
   </app-cropper-functions>
-
   <button (click)="saveEditedCard()">💾 Speichern</button>
   <button (click)="cancelEditCard()">Abbrechen</button>
+</div>
+
+<!-- Person suchen Button -->
+<div class="mt-2 mb-3">
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target=".searchModal"
+    (click)="resetDataForSearchModal()">
+    Person suchen
+  </button>
+</div>
+
+<!-- Search Modal -->
+<div class="modal fade searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-full-height" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>Suche nach Person</strong>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label for="name" class="col-sm-2 col-form-label">Vorname:</label>
+          <div class="col-sm-10">
+            <input type="text" id="name" class="form-control" [(ngModel)]="searchName"
+              (ngModelChange)="searchKeysValid()" />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="surname" class="col-sm-2 col-form-label">Name:</label>
+          <div class="col-sm-10">
+            <input type="text" id="surname" class="form-control" [(ngModel)]="searchSurname"
+              (ngModelChange)="searchKeysValid()" />
+          </div>
+        </div>
+        <div class="row mb-3" style="font-size: 10pt">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-10">
+            <input class="align-middle" type="checkbox" id="international" [(ngModel)]="internationalSearch" />
+            <label for="international">&nbsp;international suchen</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-10">
+            <div class="text-primary" *ngIf="(searchResult$ | async) && searching; else loading">
+              Einträge werden geladen
+            </div>
+            <ng-template #loading>
+              <div class="spinner-border text-primary" *ngIf="searching" role="status">
+                <span class="sr-only"></span>
+              </div>
+            </ng-template>
+            <div class="warning" *ngIf="(searchResult$ | async)?.length === 0">
+              Keine Einträge gefunden
+            </div>
+            <span class="warning" *ngIf="!searchValid && searchDirty">*Mindestens ein Feld ausfüllen!</span>
+            <button class="btn btn-primary" style="float: right" (click)="searchContacts()"
+              [disabled]="!searchValid || !searchDirty">
+              Suchen
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Kennung</th>
+              <th scope="col">Nachname</th>
+              <th scope="col">Vorname</th>
+              <th scope="col">Abteilung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let contact of searchResult$ | async">
+              <td class="col-1">
+                <button type="button" class="btn btn-primary btn-sm" (click)="addContact(contact)"
+                  *ngIf="!checkContactExists({contact : contact})">
+                  <i class="bi bi-plus"></i>
+                </button>
+                <button type="button" class="btn btn-success btn-sm" *ngIf="checkContactExists({contact : contact})"
+                  [disabled]="checkContactExists({contact : contact})">
+                  <i class="bi bi-check"></i>
+                </button>
+              </td>
+              <td class="col-3">{{ contact.identity }}</td>
+              <td class="col-3">{{ contact.surname }}</td>
+              <td class="col-3">{{ contact.name }}</td>
+              <td class="col-2">{{ contact.department }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+          Schliessen
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Search Modal -->
+
+<!-- Edit Modal -->
+<div class="modal fade editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-full-height" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="heading lead valign fontBold" style="font-size: 16pt" *ngIf="chosenContact">
+          <strong>{{ chosenContact.displayName }} bearbeiten</strong>
+        </p>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3" *ngIf="chosenContact">
+          <div class="row mb-3">
+            <div class="col-4">
+              <img [src]="chosenContact.photo ? './assets/photos/' + chosenContact.photo : chosenContact.image"
+                alt="Foto nicht gefunden" width="200px" />
+            </div>
+            <div class="col-8">
+              <div class="row mb-2">
+                <p class="col-sm-3 mb-3 fontBold">Kennung:</p>
+                <div class="col-sm-9">
+                  <p>{{ chosenContact.identity }}</p>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <p class="col-sm-3 mb-3 fontBold">Name:</p>
+                <div class="col-sm-9">
+                  <p>{{ chosenContact.displayName }}</p>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <p class="col-sm-3 mb-3 fontBold">Tel:</p>
+                <div class="col-sm-9">
+                  <p>{{ chosenContact.tel }}</p>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <p class="col-sm-3 mb-3 fontBold">Admin:</p>
+                <div class="col-sm-9">
+                  <select class="form-select" [(ngModel)]="chosenContact.admin" (change)="setAdmin()">
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <p class="col-sm-3 mb-3 fontBold">Universal:</p>
+                <div class="col-sm-9">
+                  <select class="form-select" [(ngModel)]="chosenContact.universal" (change)="setUniversal()">
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="subject" class="col-sm-3 col-form-label fontBold">Rolle:</label>
+                <div class="col-sm-9">
+                  <select id="subject" class="form-select" [(ngModel)]="selectedRole">
+                    <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+                  </select>
+                </div>
+                <div class="mt-2">
+                  <button type="button" class="btn btn-outline-primary" (click)="updateContactRole()"
+                    style="float: right">
+                    Rolle Zuweisen
+                  </button>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label for="inputFile" class="col-sm-3 col-form-label fontBold">Datei</label>
+                <div class="col-sm-9">
+                  <input id="inputFile" #imageInput class="form-control" type="file" accept="image/*" tabindex="-1"
+                    title="Datei auswählen" (change)="onFileSelected($event)" />
+                </div>
+                <div class="mt-2">
+                  <button type="button" class="btn btn-outline-primary" (click)="updateContactPhoto()"
+                    style="float: right" [disabled]="imgFile === null">
+                    Foto Hochladen
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="container">
+          <div class="mb-2">
+            <p class="mb-3 fontBold fs-4">Zuständigkeiten</p>
+          </div>
+          <div class="row mb-2">
+            <p class="col-sm-3 mb-3 fontBold">Bereich:</p>
+            <div class="col-sm-9">
+              <select class="form-select" [(ngModel)]="selectedSector">
+                <option *ngFor="let sector of sectorList" [ngValue]="sector.sectorName">
+                  {{ sector.sectorName }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <p class="col-sm-3 mb-3 fontBold">Thema:</p>
+            <div class="col-sm-9">
+              <select class="form-select" [(ngModel)]="selectedSubject">
+                <option *ngFor="let subject of subjectList" [ngValue]="subject.subjectName">
+                  {{ subject.subjectName }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9">
+              <div class="warning" *ngIf="assignmentExist" style="float: left">
+                <div>Kombination schon vorhanden!</div>
+              </div>
+
+            </div>
+          </div>
+          <hr />
+          <table class="table table-hover" *ngIf="showAssignments">
+            <thead>
+              <tr>
+                <th scope="col">Bereich</th>
+                <th scope="col">Thema</th>
+                <th scope="col" style="text-align: right">Optionen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of assignmentsOfContact">
+                <td class="col-3">{{ a.sector }}</td>
+                <td class="col-4">{{ a.subject }}</td>
+                <td class="col-2" style="text-align: right">
+
+                    <i class="bi bi-trash"></i>
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="fontBold warning" *ngIf="noAssignmentFound">
+            Keine Zuständigkeiten gefunden
+          </div>
+          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" style="float: right">
+            Schliessen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Edit Modal -->
+
+<!-- Delete Modal -->
+<div class="modal fade deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true"
+  data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-full-height" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="heading lead valign" style="font-size: 16pt">
+          <strong>Person löschen?</strong>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+          Nein
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" (click)="deleteContact()">
+          Ja
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Delete Modal -->

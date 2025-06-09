@@ -11,5 +11,5 @@ const serverConfig = {
 export const config = mergeApplicationConfig(appConfig, serverConfig);
 
 export const routes = [
-  { path: '', redirectTo: 'todo', pathMatch: 'full' } 
+  { path: '', redirectTo: 'todo', pathMatch: 'full' }
 ];

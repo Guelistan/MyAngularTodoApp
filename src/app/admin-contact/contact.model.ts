@@ -5,6 +5,18 @@ import { AdminContactComponent } from './admin-contact.component';
 
 // Definiert das Interface für einen Kontakt mit verschiedenen Feldern
 export interface Contact {
+  presence: unknown;
+  title: any;
+  phone: any;
+  tel: any;
+  link: any;
+  description: any;
+  image: any;
+  displayName: any;
+  identity: any;
+  role: string;
+  universal(identity: any, universal: any): unknown;
+  admin(identity: any, admin: any): unknown;
   id: number;
   name: string;
   surname: string;
@@ -20,6 +32,8 @@ export interface Contact {
 
 // Definiert das Interface für einen Benutzer aus Active Directory
 export interface AdUser {
+  department: any;
+  identity(identity: any): unknown;
   id: number;
   name: string;
   surname: string;
@@ -161,7 +175,7 @@ const newContact: contact = new contact(
 @NgModule({
   imports: [CommonModule, AdminContactComponent],
 })
-export class AdminContactModule {}
+export class AdminContactModule { }
 
 
 export interface AdUser {

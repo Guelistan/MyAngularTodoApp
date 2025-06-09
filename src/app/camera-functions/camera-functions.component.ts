@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-camera-functions',
   standalone: true,
-  imports: [CommonModule, FormsModule, CropperFunctionsComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './camera-functions.component.html',
   styleUrls: ['./camera-functions.component.css']
 })
