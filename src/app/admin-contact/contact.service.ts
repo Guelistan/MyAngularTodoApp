@@ -10,6 +10,37 @@ interface ApiContactResponse {
   message: string;
 }
 
+/**
+ * Service zur Verwaltung von Kontakten im Admin-Bereich.
+ * 
+ * Stellt Methoden für CRUD-Operationen, Suche, Filter und Attribut-Änderungen bereit.
+ * Nutzt HttpClient für die Kommunikation mit dem Backend.
+ * 
+ * @remarks
+ * - Die Basis-URL wird aus der App-Konfiguration geladen.
+ * - Enthält Methoden zum Aktualisieren von Rollen, Fotos und Präsenz-Status.
+ * - Bietet verschiedene Filtermöglichkeiten (z.B. nach Name, E-Mail, Abteilung).
+ * - Ein Subject (`refreshContacts`) dient als Trigger für das Aktualisieren der Kontaktliste.
+ * 
+ * Schritte:
+ * 1. Initialisierung der Basis-URL im Konstruktor.
+ * 2. Standard-CRUD-Methoden: Kontakte abrufen, hinzufügen, löschen, aktualisieren.
+ * 3. Suche & Filter: Kontakte nach verschiedenen Kriterien suchen.
+ * 4. Attribute setzen: Universal/Admin/Präsenz-Status eines Kontakts ändern.
+ * 5. Methoden zur Aktualisierung von Rolle und Foto eines Kontakts.
+ * 6. Filtermethoden für spezifische Eigenschaften (E-Mail, Name, etc.).
+ * 7. Refresh-Trigger: Ermöglicht das manuelle Auslösen eines Kontakt-Refreshs.
+ * 
+ * @example
+ * // Alle Kontakte abrufen
+ * contactService.getAllContacts().subscribe(contacts => { ... });
+ * 
+ * // Kontakt nach ID abrufen
+ * contactService.getContactById(1).subscribe(contact => { ... });
+ * 
+ * // Kontakt hinzufügen
+ * contactService.addContact('user123').subscribe(response => { ... });
+ */
 @Injectable({
   providedIn: 'root'
 })

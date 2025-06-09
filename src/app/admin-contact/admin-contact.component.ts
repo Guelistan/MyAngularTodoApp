@@ -38,6 +38,41 @@ interface Card {
   contactId?: number;
 }
 
+/**
+ * AdminContactComponent verwaltet sowohl lokale als auch service-basierte Kontakte und zugehörige Karten.
+ *
+ * ## Hauptfunktionen:
+ * - Verwaltung von lokalen Kontakten und Karten (CRUD, Speicherung in LocalStorage)
+ * - Bildaufnahme und -bearbeitung für Kontakte und Karten (Kamera, Cropper)
+ * - Verwaltung von Kontakten aus dem Backend (Service-getrieben)
+ * - Zuweisung und Bearbeitung von Rollen, Sektoren und Fächern für Kontakte
+ * - Suche und Auswahl von Kontakten (inkl. internationaler Suche)
+ * - Verwaltung von Kontakt-Zuweisungen (Assignments)
+ *
+ * ## Wichtige Properties:
+ * - `localContacts`, `cards`: Lokale Kontakte und Karten (LocalStorage)
+ * - `contacts`, `chosenContact`, `assignmentsOfContact`: Service-getriebene Kontakte und deren Zuweisungen
+ * - `showCamera`, `showCropper`, `showCardCamera`, `showCardCropper`: Steuerung der Bildbearbeitungs-UI
+ * - `searchResult$`, `searchName`, `searchSurname`: Kontakt-Suche
+ * - `roles`, `selectedRole`: Rollenverwaltung für Kontakte
+ *
+ * ## Wichtige Methoden:
+ * - `ngOnInit`: Initialisiert lokale Daten und lädt Service-Daten
+ * - Lokale Kontakte/Karten: `saveNewContact`, `deleteLocalContact`, `editCard`, `saveEditedCard`, `saveNewCard`, `deleteCard`
+ * - Bildbearbeitung: `onImageSelected`, `onCardImageSelected`, `onCameraImage`, `onCropped`, `onCardCameraImage`, `onCardCropped`
+ * - Service-Kontakte: `setContacts`, `addContact`, `chooseContact`, `updateContactRole`, `updateContactPhoto`, `deleteContact`
+ * - Suche: `searchContacts`, `searchKeysValid`, `resetDataForSearchModal`
+ * - Zuweisungen: `checkAssignmentExist`, `setUniversal`, `setAdmin`
+ *
+ * ## Hinweise:
+ * - Die Komponente nutzt sowohl Template-driven als auch Service-driven Ansätze.
+ * - Viele Methoden sind für Drag & Drop und Bildbearbeitung ausgelegt.
+ * - Die Komponente ist standalone und importiert mehrere Hilfskomponenten.
+ *
+ * @component
+ * @example
+ * <app-admin-contact></app-admin-contact>
+ */
 @Component({
   selector: 'app-admin-contact',
   standalone: true,
